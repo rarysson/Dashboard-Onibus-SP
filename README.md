@@ -1,4 +1,4 @@
-# [Rarysson - Front-end] Programa de estágio - 2020-1
+# Programa de estágio - 2020-1
 
 ![Aiko](doc/imagens/aiko.png)
 
@@ -11,4 +11,4 @@ O teste escolhido foi o desafio para desenvolvedor front-end.
 -   Vue
 -   Bootstrap
 -   Axios
--   Leaflet
+-   Leaflet com OpenStreetMap

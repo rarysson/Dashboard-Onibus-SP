@@ -10,10 +10,6 @@
                 </p>
                 <p>Nome: {{ corredor.nc }}</p>
             </li>
-
-            <strong v-if="corredores && corredores.length"
-                >Axios instalado</strong
-            >
         </ul>
 
         <ul v-if="errors && errors.length">

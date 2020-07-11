@@ -1,16 +1,29 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
+import Index from "../views/Index.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
     {
         path: "/",
-        name: "Home",
-        component: Home
+        component: Index,
+        children: [
+            {
+                path: "",
+                name: "Home",
+                component: () => import("../views/Home.vue")
+            }
+        ]
     }
 ];
+
+if (process.env.MODE !== "ssr") {
+    routes.push({
+        path: "*",
+        component: () => import("../views/Error404.vue")
+    });
+}
 
 const router = new VueRouter({
     mode: "history",
