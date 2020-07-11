@@ -11,3 +11,4 @@ O teste escolhido foi o desafio para desenvolvedor front-end.
 -   Vue
 -   Bootstrap
 -   Axios
+-   Leaflet
