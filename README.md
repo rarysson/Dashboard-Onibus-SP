@@ -12,3 +12,14 @@ O teste escolhido foi o desafio para desenvolvedor front-end.
 -   Bootstrap
 -   Axios
 -   Leaflet com OpenStreetMap
+
+# Rodando a aplicação
+
+Para usar online acesse o link: https://dashboard-sp-trans.herokuapp.com/
+
+Para usar localmente, clone o repositório, vá na pasta criada e execute os comandos:
+
+```
+npm install
+npm run serve
+```
