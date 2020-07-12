@@ -1,9 +1,15 @@
 <template>
-    <div>
-        <b-button v-b-toggle.sidebar>
+    <div class="app-container">
+        <b-button
+            v-b-toggle.sidebar
+            variant="primary"
+            size="lg"
+            style="margin-top: 10px;"
+        >
             <b-icon-list />
             Menu
         </b-button>
+
         <b-sidebar id="sidebar" backdrop no-header-close>
             <b-img src="../assets/logo.png" alt="logo sp trans" class="logo" />
 
@@ -23,18 +29,13 @@
             </b-list-group>
 
             <template v-slot:footer="{ hide }">
-                <b-button
-                    @click="hide"
-                    variant="info"
-                    style="width:100%;"
-                    squared
-                >
+                <b-button @click="hide" variant="info" block squared size="lg">
                     Fechar menu
                 </b-button>
             </template>
         </b-sidebar>
 
-        <router-view />
+        <router-view class="views-container" />
     </div>
 </template>
 
@@ -44,10 +45,21 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.app-container {
+    padding: 1vw 1vw 0.5vw;
+    display: flex;
+    align-items: flex-start;
+}
+
 .logo {
     width: 50%;
     margin-left: 20px;
     margin-bottom: 30px;
+}
+
+.views-container {
+    flex: 1;
+    margin-left: 30px;
 }
 </style>
