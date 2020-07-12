@@ -2,57 +2,44 @@
     <b-container fluid>
         <b-row>
             <b-col>
-                <h1>Linha para pesquisas</h1>
+                <b-button
+                    variant="primary"
+                    size="sm"
+                    @click="get_buses_position"
+                >
+                    <div v-if="!show_buses">
+                        <b-icon-eye />
+                        Mostrar todos ônibus
+                    </div>
+                    <div v-else>
+                        <b-icon-eye-slash />
+                        Ocultar todos ônibus
+                    </div>
+                </b-button>
             </b-col>
         </b-row>
 
         <b-row>
             <b-col>
                 <div class="map-container">
-                    <l-map
-                        :zoom="map.zoom"
-                        :center="map.center"
-                        :options="map.mapOptions"
-                        @update:center="centerUpdate"
-                        @update:zoom="zoomUpdate"
-                    >
+                    <l-map :zoom="map.zoom" :center="map.center">
                         <l-tile-layer
                             :url="map.url"
                             :attribution="map.attribution"
                         />
-                        <l-marker :lat-lng="map.withPopup">
-                            <l-popup>
-                                <div @click="innerClick">
-                                    I am a popup
-                                    <p v-show="map.showParagraph">
-                                        Lorem ipsum dolor sit amet, consectetur
-                                        adipiscing elit. Quisque sed pretium
-                                        nisl, ut sagittis sapien. Sed vel
-                                        sollicitudin nisi. Donec finibus semper
-                                        metus id malesuada.
-                                    </p>
-                                </div>
-                            </l-popup>
-                        </l-marker>
-                        <l-marker :lat-lng="map.withTooltip">
-                            <l-tooltip
-                                :options="{
-                                    permanent: true,
-                                    interactive: true
-                                }"
+                        <template v-if="show_buses">
+                            <l-marker
+                                v-for="(bus, index) in buses"
+                                :key="index"
+                                :lat-lng="bus.position"
                             >
-                                <div @click="innerClick">
-                                    I am a tooltip
-                                    <p v-show="map.showParagraph">
-                                        Lorem ipsum dolor sit amet, consectetur
-                                        adipiscing elit. Quisque sed pretium
-                                        nisl, ut sagittis sapien. Sed vel
-                                        sollicitudin nisi. Donec finibus semper
-                                        metus id malesuada.
-                                    </p>
-                                </div>
-                            </l-tooltip>
-                        </l-marker>
+                                <l-popup>
+                                    <strong>Último horário:</strong>
+                                    {{ new Date(bus.last_time).getHours() }}:
+                                    {{ new Date(bus.last_time).getMinutes() }}
+                                </l-popup>
+                            </l-marker>
+                        </template>
                     </l-map>
                 </div>
             </b-col>
@@ -67,9 +54,9 @@
 </template>
 
 <script>
-// import API from "../util/api";
+import API from "../util/api";
 import { latLng } from "leaflet";
-import { LMap, LTileLayer, LMarker, LPopup, LTooltip } from "vue2-leaflet";
+import { LMap, LTileLayer, LMarker, LPopup } from "vue2-leaflet";
 
 export default {
     name: "HomePage",
@@ -78,42 +65,44 @@ export default {
         LMap,
         LTileLayer,
         LMarker,
-        LPopup,
-        LTooltip
+        LPopup
     },
 
     data() {
         return {
+            show_buses: false,
+            buses: [],
             map: {
-                zoom: 13,
-                center: latLng(-23.5489, -46.6388),
+                zoom: 11,
+                center: latLng(-23.5489, -46.6388), //Centro de São Paulo
                 url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                 attribution:
-                    '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-                withPopup: latLng(-23.5489, -46.5388),
-                withTooltip: latLng(-23.5489, -46.5888),
-                currentZoom: 11.5,
-                currentCenter: latLng(47.41322, -1.219482),
-                showParagraph: false,
-                mapOptions: {
-                    zoomSnap: 0.5
-                }
+                    '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             }
         };
     },
 
     methods: {
-        zoomUpdate(zoom) {
-            this.map.currentZoom = zoom;
-        },
-        centerUpdate(center) {
-            this.map.currentCenter = center;
-        },
-        showLongText() {
-            this.map.showParagraph = !this.map.showParagraph;
-        },
-        innerClick() {
-            alert("Click!");
+        async get_buses_position() {
+            this.show_buses = !this.show_buses;
+
+            if (this.buses.length === 0) {
+                try {
+                    const response = await API.get("Posicao");
+                    const data = response.data.l.splice(0, 3);
+
+                    data.forEach(line => {
+                        line.vs.forEach(bus => {
+                            this.buses.push({
+                                accessible: bus.a,
+                                position: latLng(bus.py, bus.px)
+                            });
+                        });
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
+            }
         }
     }
 };
@@ -122,8 +111,8 @@ export default {
 <style scoped>
 .map-container {
     height: 75vh;
-    margin: 25px 0;
-    border: 2px solid black;
+    margin: 10px 0;
+    border: 2px solid rgba(0, 0, 0, 0.6);
     border-radius: 5px;
     overflow: auto;
 }
