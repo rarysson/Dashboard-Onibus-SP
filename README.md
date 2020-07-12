@@ -13,7 +13,7 @@ O teste escolhido foi o desafio para desenvolvedor front-end.
 -   Axios
 -   Leaflet com OpenStreetMap
 
-# Rodando a aplicação
+## Rodando a aplicação
 
 Para usar online acesse o link: https://dashboard-sp-trans.herokuapp.com/
 
