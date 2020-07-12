@@ -11,7 +11,11 @@
         </b-button>
 
         <b-sidebar id="sidebar" backdrop no-header-close>
-            <b-img src="../assets/logo.png" alt="logo sp trans" class="logo" />
+            <b-img
+                src="../assets/logos/logo.png"
+                alt="logo sp trans"
+                class="logo"
+            />
 
             <b-list-group>
                 <b-list-group-item to="/">

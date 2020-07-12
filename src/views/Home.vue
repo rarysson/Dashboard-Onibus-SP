@@ -1,20 +1,30 @@
 <template>
     <b-container fluid>
-        <b-row>
-            <b-col>
+        <b-row align-h="start">
+            <b-col cols="auto">
                 <b-button
                     variant="primary"
                     size="sm"
                     @click="get_buses_position"
                 >
-                    <div v-if="!show_buses">
-                        <b-icon-eye />
-                        Mostrar todos ônibus
-                    </div>
-                    <div v-else>
-                        <b-icon-eye-slash />
-                        Ocultar todos ônibus
-                    </div>
+                    <eye-icon-msg
+                        :condition-var="show_buses"
+                        visible-message="Mostrar todos ônibus"
+                        hidden-message="Ocultar todos ônibus"
+                    />
+                </b-button>
+            </b-col>
+            <b-col cols="auto">
+                <b-button
+                    variant="primary"
+                    size="sm"
+                    @click="get_bus_stop_position"
+                >
+                    <eye-icon-msg
+                        :condition-var="show_bus_stop"
+                        visible-message="Mostrar todas paradas"
+                        hidden-message="Ocultar todas paradas"
+                    />
                 </b-button>
             </b-col>
         </b-row>
@@ -27,16 +37,45 @@
                             :url="map.url"
                             :attribution="map.attribution"
                         />
+
                         <template v-if="show_buses">
                             <l-marker
-                                v-for="(bus, index) in buses"
-                                :key="index"
+                                v-for="bus in buses"
+                                :key="bus.id"
                                 :lat-lng="bus.position"
                             >
+                                <l-icon
+                                    icon-url="../assets/icons_map/bus.png"
+                                    :icon-size="[30, 30]"
+                                />
                                 <l-popup>
-                                    <strong>Último horário:</strong>
-                                    {{ new Date(bus.last_time).getHours() }}:
-                                    {{ new Date(bus.last_time).getMinutes() }}
+                                    <p>
+                                        <strong>Ônibus: </strong>
+                                        {{ bus.id }}
+                                    </p>
+                                </l-popup>
+                            </l-marker>
+                        </template>
+
+                        <template v-if="show_bus_stop">
+                            <l-marker
+                                v-for="(stop, index) in bus_stop"
+                                :key="index"
+                                :lat-lng="stop.position"
+                            >
+                                <l-icon
+                                    icon-url="../assets/icons_map/bus_stop.png"
+                                    :icon-size="[30, 30]"
+                                />
+                                <l-popup>
+                                    <p>
+                                        <strong>Nome da parada: </strong
+                                        >{{ stop.bus_stop_name }}
+                                    </p>
+                                    <p>
+                                        <strong>Endereço: </strong
+                                        >{{ stop.address_name }}
+                                    </p>
                                 </l-popup>
                             </l-marker>
                         </template>
@@ -56,7 +95,8 @@
 <script>
 import API from "../util/api";
 import { latLng } from "leaflet";
-import { LMap, LTileLayer, LMarker, LPopup } from "vue2-leaflet";
+import { LMap, LTileLayer, LMarker, LPopup, LIcon } from "vue2-leaflet";
+import EyeIconMsg from "../components/EyeIconMsg";
 
 export default {
     name: "HomePage",
@@ -65,13 +105,17 @@ export default {
         LMap,
         LTileLayer,
         LMarker,
-        LPopup
+        LPopup,
+        EyeIconMsg,
+        LIcon
     },
 
     data() {
         return {
             show_buses: false,
+            show_bus_stop: false,
             buses: [],
+            bus_stop: [],
             map: {
                 zoom: 11,
                 center: latLng(-23.5489, -46.6388), //Centro de São Paulo
@@ -94,9 +138,33 @@ export default {
                     data.forEach(line => {
                         line.vs.forEach(bus => {
                             this.buses.push({
+                                id: bus.p,
                                 accessible: bus.a,
                                 position: latLng(bus.py, bus.px)
                             });
+                        });
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        },
+
+        async get_bus_stop_position() {
+            this.show_bus_stop = !this.show_bus_stop;
+
+            if (this.bus_stop.length === 0) {
+                try {
+                    const response = await API.get("Parada/Buscar", {
+                        params: { termosBusca: "" }
+                    });
+                    const data = response.data.splice(0, 75);
+
+                    data.forEach(stop => {
+                        this.bus_stop.push({
+                            bus_stop_name: stop.np,
+                            address_name: stop.ed,
+                            position: latLng(stop.py, stop.px)
                         });
                     });
                 } catch (error) {
