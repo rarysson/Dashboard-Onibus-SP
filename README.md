@@ -11,7 +11,8 @@ O teste escolhido foi o desafio para desenvolvedor front-end.
 -   Vue
 -   Bootstrap
 -   Axios
--   Leaflet com OpenStreetMap
+-   OpenStreetMap
+-   Leaflet com MarkerCluster
 
 ## Rodando a aplicação
 

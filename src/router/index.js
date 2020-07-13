@@ -12,7 +12,23 @@ const routes = [
             {
                 path: "",
                 name: "Home",
-                component: () => import("../views/Home.vue")
+                component: () => import("../views/Home.vue"),
+                children: [
+                    {
+                        path: "",
+                        component: () => import("../views/Home/Index.vue")
+                    },
+                    {
+                        path: "map/bus",
+                        name: "BusMap",
+                        component: () => import("../views/Home/BusMap.vue")
+                    },
+                    {
+                        path: "map/busstop",
+                        name: "BusStopMap",
+                        component: () => import("../views/Home/BusStopMap.vue")
+                    }
+                ]
             },
             {
                 path: "infos",
