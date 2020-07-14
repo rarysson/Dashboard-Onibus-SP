@@ -28,37 +28,14 @@
 
         <b-row>
             <b-col>
-                <div class="map-container">
-                    <l-map :zoom="map.zoom" :center="map.center">
-                        <l-tile-layer
-                            :url="map.url"
-                            :attribution="map.attribution"
-                        />
-
-                        <template v-if="show_bus_stop">
-                            <l-marker
-                                v-for="(stop, index) in bus_stop"
-                                :key="index"
-                                :lat-lng="stop.position"
-                            >
-                                <l-icon
-                                    icon-url="../../assets/icons_map/bus_stop.png"
-                                    :icon-size="[30, 30]"
-                                />
-                                <l-popup>
-                                    <p>
-                                        <strong>Nome da parada: </strong
-                                        >{{ stop.bus_stop_name }}
-                                    </p>
-                                    <p>
-                                        <strong>Endereço: </strong
-                                        >{{ stop.address_name }}
-                                    </p>
-                                </l-popup>
-                            </l-marker>
-                        </template>
-                    </l-map>
-                </div>
+                <l-map ref="map" :options="map_options">
+                    <l-marker-cluster
+                        ref="cluster"
+                        :markers-icon="icon"
+                        :options="cluster_options"
+                        @cluster-created="show_markers_on_map"
+                    />
+                </l-map>
             </b-col>
         </b-row>
 
@@ -71,74 +48,94 @@
 </template>
 
 <script>
-import API from "../../util/api";
+import L from "leaflet";
 import { latLng } from "leaflet";
-import { LMap, LTileLayer, LMarker, LPopup, LIcon } from "vue2-leaflet";
-import EyeIconMsg from "../../components/EyeIconMsg";
+import EyeIconMsg from "@/components/EyeIconMsg";
+import LMap from "@/components/LMap";
+import LMarkerCluster from "@/components/LMarkerCluster";
+import API from "@/util/api";
 
 export default {
     name: "BusStopMapPage",
 
     components: {
-        LMap,
-        LTileLayer,
-        LMarker,
-        LPopup,
         EyeIconMsg,
-        LIcon
+        LMap,
+        LMarkerCluster
     },
 
     data() {
         return {
             show_bus_stop: false,
             bus_stop: [],
-            map: {
-                zoom: 11,
+
+            map_options: {
+                zoom: 12,
+                maxZoom: 18,
                 center: latLng(-23.5489, -46.6388), //Centro de São Paulo
                 url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                 attribution:
                     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            },
+
+            icon: L.icon({
+                iconUrl: require("@/assets/icons_map/bus_stop.png"),
+                iconSize: [30, 30]
+            }),
+
+            cluster_options: {
+                disableClusteringAtZoom: 16
             }
         };
     },
 
     methods: {
         async get_bus_stop_position() {
-            this.show_bus_stop = !this.show_bus_stop;
-
-            if (this.bus_stop.length === 0) {
+            if (this.bus_stop.length === 0 && !this.show_bus_stop) {
                 try {
                     const response = await API.get("Parada/Buscar", {
                         params: { termosBusca: "" }
                     });
-                    const data = response.data.splice(0, 75);
+                    const data = response.data;
 
                     data.forEach(stop => {
                         this.bus_stop.push({
-                            bus_stop_name: stop.np,
-                            address_name: stop.ed,
-                            position: latLng(stop.py, stop.px)
+                            position: latLng(stop.py, stop.px),
+                            text: `<strong>Nome da parada:</strong> ${stop.np} <br>
+                            <strong>Nome da rua:</strong> ${stop.ed}`
                         });
                     });
+
+                    this.$refs.cluster.set_markers_data(this.bus_stop);
                 } catch (error) {
                     console.log(error);
                 }
             }
+
+            if (!this.show_bus_stop) {
+                this.show_markers_on_map();
+            } else {
+                this.hide_markers_on_map();
+            }
+
+            this.show_bus_stop = !this.show_bus_stop;
         },
 
         go_back() {
             this.$router.back();
+        },
+
+        show_markers_on_map() {
+            this.$refs.map.map_object.addLayer(
+                this.$refs.cluster.marker_cluster
+            );
+        },
+
+        hide_markers_on_map() {
+            this.$refs.map.map_object.removeLayer(
+                this.$refs.cluster.marker_cluster
+            );
         }
     }
 };
 </script>
-
-<style scoped>
-.map-container {
-    height: 75vh;
-    margin: 10px 0;
-    border: 2px solid rgba(0, 0, 0, 0.6);
-    border-radius: 5px;
-    overflow: auto;
-}
-</style>
