@@ -28,14 +28,16 @@
 
         <b-row>
             <b-col>
-                <l-map ref="map" :options="map_options">
-                    <l-marker-cluster
-                        ref="cluster"
-                        :markers-icon="icon"
-                        :options="cluster_options"
-                        @cluster-created="show_markers_on_map"
-                    />
-                </l-map>
+                <b-overlay :show="show_overlay">
+                    <l-map ref="map" :options="map_options">
+                        <l-marker-cluster
+                            ref="cluster"
+                            :markers-icon="icon"
+                            :options="cluster_options"
+                            @cluster-created="show_markers_on_map"
+                        />
+                    </l-map>
+                </b-overlay>
             </b-col>
         </b-row>
 
@@ -66,6 +68,7 @@ export default {
 
     data() {
         return {
+            show_overlay: false,
             show_buses: false,
             buses: [],
             map_options: {
@@ -84,15 +87,23 @@ export default {
 
             cluster_options: {
                 chunkedLoading: true,
-                chunkInterval: 50,
+                chunkInterval: 100,
                 disableClusteringAtZoom: 18
             }
         };
     },
 
+    watch: {
+        show_overlay() {
+            this.$refs.map.$el.classList.toggle("hide-map");
+        }
+    },
+
     methods: {
         async get_buses_position() {
             if (this.buses.length === 0 && !this.show_buses) {
+                this.show_overlay = true;
+
                 try {
                     const response = await API.get("Posicao");
                     const data = response.data.l;
@@ -108,6 +119,7 @@ export default {
                     });
 
                     this.$refs.cluster.set_markers_data(this.buses, false);
+                    this.show_overlay = false;
                 } catch (error) {
                     console.log(error);
                 }
@@ -140,3 +152,9 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+.hide-map {
+    z-index: -1;
+}
+</style>

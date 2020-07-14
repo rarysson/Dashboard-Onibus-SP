@@ -9,7 +9,7 @@ O teste escolhido foi o desafio para desenvolvedor front-end.
 ## Tecnologias usadas
 
 -   Vue
--   Bootstrap
+-   BootstrapVue
 -   Axios
 -   OpenStreetMap
 -   Leaflet com MarkerCluster

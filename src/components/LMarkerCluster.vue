@@ -24,7 +24,6 @@ export default {
 
     methods: {
         set_markers_data(markers_data, bind_text = true) {
-            console.time("marker data for");
             markers_data.forEach(data => {
                 let marker = L.marker(L.latLng(data.py, data.px), {
                     icon: this.markersIcon
@@ -36,11 +35,8 @@ export default {
 
                 this.markers.push(marker);
             });
-            console.timeEnd("marker data for");
 
-            console.time("adding layers");
             this.marker_cluster.addLayers(this.markers);
-            console.timeEnd("adding layers");
 
             this.$emit("cluster-created");
         }

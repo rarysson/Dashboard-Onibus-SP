@@ -20,7 +20,7 @@
             <b-list-group>
                 <b-list-group-item to="/">
                     <b-icon-map />
-                    Mapa
+                    Mapas
                 </b-list-group-item>
                 <b-list-group-item to="infos">
                     <b-icon-info-circle />

@@ -28,14 +28,16 @@
 
         <b-row>
             <b-col>
-                <l-map ref="map" :options="map_options">
-                    <l-marker-cluster
-                        ref="cluster"
-                        :markers-icon="icon"
-                        :options="cluster_options"
-                        @cluster-created="show_markers_on_map"
-                    />
-                </l-map>
+                <b-overlay :show="show_overlay">
+                    <l-map ref="map" :options="map_options">
+                        <l-marker-cluster
+                            ref="cluster"
+                            :markers-icon="icon"
+                            :options="cluster_options"
+                            @cluster-created="show_markers_on_map"
+                        />
+                    </l-map>
+                </b-overlay>
             </b-col>
         </b-row>
 
@@ -66,6 +68,7 @@ export default {
 
     data() {
         return {
+            show_overlay: false,
             show_bus_stop: false,
             bus_stop: [],
 
@@ -89,9 +92,17 @@ export default {
         };
     },
 
+    watch: {
+        show_overlay() {
+            this.$refs.map.$el.classList.toggle("hide-map");
+        }
+    },
+
     methods: {
         async get_bus_stop_position() {
             if (this.bus_stop.length === 0 && !this.show_bus_stop) {
+                this.show_overlay = true;
+
                 try {
                     const response = await API.get("Parada/Buscar", {
                         params: { termosBusca: "" }
@@ -100,13 +111,15 @@ export default {
 
                     data.forEach(stop => {
                         this.bus_stop.push({
-                            position: latLng(stop.py, stop.px),
+                            px: stop.px,
+                            py: stop.py,
                             text: `<strong>Nome da parada:</strong> ${stop.np} <br>
                             <strong>Nome da rua:</strong> ${stop.ed}`
                         });
                     });
 
                     this.$refs.cluster.set_markers_data(this.bus_stop);
+                    this.show_overlay = false;
                 } catch (error) {
                     console.log(error);
                 }
@@ -139,3 +152,9 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+.hide-map {
+    z-index: -1;
+}
+</style>
