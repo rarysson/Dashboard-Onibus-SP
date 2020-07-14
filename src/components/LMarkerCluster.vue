@@ -4,7 +4,7 @@
 
 <script>
 import L from "leaflet";
-import LM from "leaflet.markercluster";
+import "leaflet.markercluster";
 
 export default {
     name: "LMarkerCluster",
@@ -19,19 +19,28 @@ export default {
     },
 
     mounted() {
-        this.marker_cluster = new LM.MarkerClusterGroup(this.options);
+        this.marker_cluster = L.markerClusterGroup(this.options);
     },
 
     methods: {
-        set_markers_data(markersData) {
-            markersData.forEach(data => {
-                const marker = L.marker(data.position, {
+        set_markers_data(markers_data, bind_text = true) {
+            console.time("marker data for");
+            markers_data.forEach(data => {
+                let marker = L.marker(L.latLng(data.py, data.px), {
                     icon: this.markersIcon
-                }).bindPopup(data.text);
+                });
 
-                this.marker_cluster.addLayer(marker);
+                if (bind_text) {
+                    marker.bindPopup(data.text);
+                }
+
                 this.markers.push(marker);
             });
+            console.timeEnd("marker data for");
+
+            console.time("adding layers");
+            this.marker_cluster.addLayers(this.markers);
+            console.timeEnd("adding layers");
 
             this.$emit("cluster-created");
         }

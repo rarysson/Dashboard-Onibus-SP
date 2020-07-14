@@ -19,10 +19,10 @@ export default {
     },
 
     mounted() {
-        const map = L.map("map-container").setView(
-            this.options.center,
-            this.options.zoom
-        );
+        const map = L.map("map-container", {
+            center: this.options.center,
+            zoom: this.options.zoom
+        });
 
         L.tileLayer(this.options.url, {
             maxZoom: this.options.maxZoom,

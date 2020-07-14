@@ -83,8 +83,9 @@ export default {
             }),
 
             cluster_options: {
-                disableClusteringAtZoom: 18,
-                chunkedLoading: true
+                chunkedLoading: true,
+                chunkInterval: 50,
+                disableClusteringAtZoom: 18
             }
         };
     },
@@ -100,13 +101,13 @@ export default {
                         line.vs.forEach(bus => {
                             this.buses.push({
                                 accessible: bus.a,
-                                position: latLng(bus.py, bus.px),
-                                text: `<strong>Ônibus:</strong> ${bus.p}`
+                                px: bus.px,
+                                py: bus.py
                             });
                         });
                     });
 
-                    this.$refs.cluster.set_markers_data(this.buses);
+                    this.$refs.cluster.set_markers_data(this.buses, false);
                 } catch (error) {
                     console.log(error);
                 }
