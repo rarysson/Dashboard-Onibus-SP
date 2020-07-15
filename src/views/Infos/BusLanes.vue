@@ -6,6 +6,7 @@
 
 <script>
 export default {
+    // BusLanes são os corredores de ônibus
     name: "BusLanesPage"
 };
 </script>

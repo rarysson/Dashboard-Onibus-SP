@@ -6,6 +6,7 @@
 
 <script>
 export default {
+    // Lanes são as vias principais da cidade
     name: "LanesPage"
 };
 </script>
