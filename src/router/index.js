@@ -11,29 +11,18 @@ const routes = [
         children: [
             {
                 path: "",
-                component: () => import("../views/Home.vue"),
-                children: [
-                    {
-                        path: "",
-                        name: "Home",
-                        component: () => import("../views/Home/Index.vue")
-                    },
-                    {
-                        path: "map/bus",
-                        name: "BusMap",
-                        component: () => import("../views/Home/BusMap.vue")
-                    },
-                    {
-                        path: "map/busstop",
-                        name: "BusStopMap",
-                        component: () => import("../views/Home/BusStopMap.vue")
-                    }
-                ]
+                name: "Home",
+                component: () => import("../views/Home.vue")
             },
             {
-                path: "infos",
-                name: "Infos",
-                component: () => import("../views/Infos.vue")
+                path: "map/busstop",
+                name: "BusStopMap",
+                component: () => import("../views/Map/BusStopMap.vue")
+            },
+            {
+                path: "map/bus",
+                name: "BusMap",
+                component: () => import("../views/Map/BusMap.vue")
             },
             {
                 path: "infos/lines",

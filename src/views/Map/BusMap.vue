@@ -1,15 +1,5 @@
 <template>
     <b-container fluid>
-        <b-button
-            variant="info"
-            size="sm"
-            style="margin-bottom: 30px;"
-            @click="go_back"
-        >
-            <b-icon-arrow-left />
-            Voltar
-        </b-button>
-
         <b-row>
             <b-col cols="auto">
                 <b-button
@@ -132,10 +122,6 @@ export default {
             }
 
             this.show_buses = !this.show_buses;
-        },
-
-        go_back() {
-            this.$router.back();
         },
 
         show_markers_on_map() {

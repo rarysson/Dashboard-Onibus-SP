@@ -1,64 +1,57 @@
 <template>
     <div class="app-container">
+        <div class="sidebar-container border-right">
+            <menu-items />
+        </div>
+
+        <!-- TODO: Implementar quando deixar o design responsivo
         <b-button v-b-toggle.sidebar variant="primary" size="lg">
             <b-icon-list />
             Menu
         </b-button>
 
         <b-sidebar id="sidebar" backdrop no-header-close>
-            <b-img
-                src="../assets/logos/logo.png"
-                alt="logo sp trans"
-                class="logo"
-            />
-
-            <b-list-group>
-                <b-list-group-item to="/">
-                    <b-icon-map />
-                    Mapas
-                </b-list-group-item>
-                <b-list-group-item to="/infos">
-                    <b-icon-info-circle />
-                    Ver informações de transporte
-                </b-list-group-item>
-                <b-list-group-item to="/prediction">
-                    <b-icon-clock />
-                    Previsão de chegada numa parada
-                </b-list-group-item>
-            </b-list-group>
+            <menu-items />
 
             <template v-slot:footer="{ hide }">
                 <b-button @click="hide" variant="info" block squared size="lg">
                     Fechar menu
                 </b-button>
             </template>
-        </b-sidebar>
+        </b-sidebar> -->
 
         <router-view class="views-container" />
     </div>
 </template>
 
 <script>
+import MenuItems from "@/components/MenuItems";
+
 export default {
-    name: "Index"
+    name: "Index",
+
+    components: {
+        MenuItems
+    }
 };
 </script>
 
 <style scoped>
 .app-container {
-    padding: 1vw 1vw 0.5vw;
+    /* padding: 1vw 1vw 0.5vw; */
+    height: 100vh;
     display: flex;
     align-items: flex-start;
 }
 
-.logo {
-    width: 50%;
-    margin-left: 20px;
-    margin-bottom: 30px;
+.sidebar-container {
+    height: 100%;
+    padding-top: 1vw;
+    flex-basis: 320px;
 }
 
 .views-container {
     flex: 1;
-    margin-left: 30px;
+    padding: 2.5vw 1vw 0.5vw;
 }
 </style>
