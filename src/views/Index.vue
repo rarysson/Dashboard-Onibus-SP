@@ -1,11 +1,6 @@
 <template>
     <div class="app-container">
-        <b-button
-            v-b-toggle.sidebar
-            variant="primary"
-            size="lg"
-            style="margin-top: 10px;"
-        >
+        <b-button v-b-toggle.sidebar variant="primary" size="lg">
             <b-icon-list />
             Menu
         </b-button>
@@ -22,11 +17,11 @@
                     <b-icon-map />
                     Mapas
                 </b-list-group-item>
-                <b-list-group-item to="infos">
+                <b-list-group-item to="/infos">
                     <b-icon-info-circle />
                     Ver informações de transporte
                 </b-list-group-item>
-                <b-list-group-item to="prediction">
+                <b-list-group-item to="/prediction">
                     <b-icon-clock />
                     Previsão de chegada numa parada
                 </b-list-group-item>

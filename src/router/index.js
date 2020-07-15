@@ -36,6 +36,26 @@ const routes = [
                 component: () => import("../views/Infos.vue")
             },
             {
+                path: "infos/lines",
+                name: "Lines",
+                component: () => import("../views/Infos/Lines.vue")
+            },
+            {
+                path: "infos/lanes",
+                name: "Lanes",
+                component: () => import("../views/Infos/Lanes.vue")
+            },
+            {
+                path: "infos/buslanes",
+                name: "BusLanes",
+                component: () => import("../views/Infos/BusLanes.vue")
+            },
+            {
+                path: "infos/companies",
+                name: "Companies",
+                component: () => import("../views/Infos/Companies.vue")
+            },
+            {
                 path: "prediction",
                 name: "Prediction",
                 component: () => import("../views/Prediction.vue")
