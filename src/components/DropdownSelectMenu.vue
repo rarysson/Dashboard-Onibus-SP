@@ -16,11 +16,11 @@
 export default {
     name: "DropdownSelectMenu",
 
-    props: ["title", "options", "offset"],
+    props: ["title", "options", "offset", "selected"],
 
     data() {
         return {
-            selected_item: null
+            selected_item: this.selected
         };
     },
 

@@ -1,6 +1,6 @@
 <template>
     <b-container fluid>
-        <b-row>
+        <b-row style="margin-bottom: 20px;">
             <b-col cols="auto">
                 <dropdown-select-menu
                     title="Selecionar o tipo de pesquisa de previsão"
@@ -10,10 +10,11 @@
                         'Pesquisar por uma parada numa linha'
                     ]"
                     @change="update_prediction_option"
-                    @shown="hide_map"
-                    @hidden="show_map"
+                    @shown="toggle_map"
+                    @hidden="toggle_map"
                 />
             </b-col>
+
             <b-col v-if="prediction_option == 0" cols="auto">
                 <dropdown-select-menu
                     title="Selecionar o tipo de pesquisa de parada"
@@ -25,26 +26,47 @@
                     @change="update_bustop_selected"
                 />
             </b-col>
+
             <b-col v-if="prediction_option !== null" style="text-align: right;">
                 <b-button
                     :disabled="selected_busstop === null"
                     @click="get_prediction"
                 >
-                    Pesquisar
+                    Pesquisar Previsão
                 </b-button>
             </b-col>
         </b-row>
 
-        <b-row v-if="busstop_option == 0">
+        <b-row v-if="busstop_option == 1">
+            <b-col style="margin-bottom: 20px;">
+                <search-input
+                    placeholder="Digite o nome da rua ou parada..."
+                    @submit="search_term"
+                />
+            </b-col>
+        </b-row>
+
+        <b-row v-if="show_map()">
             <b-col cols="12">
                 <l-map ref="map" :options="map_options" class="map">
                     <l-marker-cluster
+                        v-if="busstop_option == 0"
                         ref="cluster"
                         :markers-icon="icon"
                         :options="cluster_options"
                         @cluster-created="show_markers_on_map"
                         @click="select_busstop"
                     />
+
+                    <l-marker-cluster
+                        v-else-if="busstop_option == 1"
+                        ref="cluster"
+                        :markers-icon="icon"
+                        :options="cluster_search_options"
+                        @cluster-created="show_markers_on_map"
+                        @click="select_busstop"
+                    />
+
                     <div v-if="selected_busstop">
                         <l-marker
                             :marker-icon="icon"
@@ -88,6 +110,7 @@ import DropdownSelectMenu from "@/components/DropdownSelectMenu";
 import LMap from "@/components/LMap";
 import LMarkerCluster from "@/components/LMarkerCluster";
 import LMarker from "@/components/LMarker";
+import SearchInput from "@/components/SearchInput";
 import API from "@/util/api";
 
 export default {
@@ -95,6 +118,7 @@ export default {
 
     components: {
         DropdownSelectMenu,
+        SearchInput,
         LMap,
         LMarkerCluster,
         LMarker
@@ -105,7 +129,7 @@ export default {
             prediction_option: null,
             busstop_option: null,
             line_option: null,
-            bus_stop: [],
+            all_bus_stop: [],
             predictions: [],
             selected_busstop: null,
 
@@ -130,6 +154,9 @@ export default {
 
             cluster_options: {
                 disableClusteringAtZoom: 16
+            },
+            cluster_search_options: {
+                disableClusteringAtZoom: 7
             }
         };
     },
@@ -144,7 +171,7 @@ export default {
                     const data = response.data;
 
                     data.forEach(stop => {
-                        this.bus_stop.push({
+                        this.all_bus_stop.push({
                             px: stop.px,
                             py: stop.py,
                             id: stop.cp,
@@ -153,7 +180,7 @@ export default {
                         });
                     });
 
-                    this.$refs.cluster.set_markers_data(this.bus_stop);
+                    this.$refs.cluster.set_markers_data(this.all_bus_stop);
                 } catch (error) {
                     console.log(error);
                 }
@@ -221,15 +248,37 @@ export default {
             }
         },
 
-        hide_map() {
+        toggle_map() {
             if (this.$refs.map) {
                 this.$refs.map.$el.classList.toggle("hide-map");
             }
         },
 
         show_map() {
-            if (this.$refs.map) {
-                this.$refs.map.$el.classList.toggle("hide-map");
+            return this.busstop_option == 0 || this.busstop_option == 1;
+        },
+
+        async search_term(term) {
+            try {
+                const response = await API.get("/Parada/Buscar", {
+                    params: { termosBusca: term }
+                });
+                const lines = response.data;
+                const bus_stop = [];
+
+                lines.forEach(line => {
+                    bus_stop.push({
+                        id: line.cp,
+                        px: line.px,
+                        py: line.py,
+                        text: `<strong>Nome da parada:</strong> ${line.np} <br>
+                        <strong>Nome da rua:</strong> ${line.ed}`
+                    });
+                });
+
+                this.$refs.cluster.set_markers_data(bus_stop);
+            } catch (error) {
+                console.log(error);
             }
         }
     }

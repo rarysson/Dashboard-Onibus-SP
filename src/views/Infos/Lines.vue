@@ -2,55 +2,45 @@
     <b-container fluid>
         <b-row align-h="between">
             <b-col cols="auto">
-                <b-form @submit.prevent="search_term">
-                    <b-input-group>
-                        <template v-slot:prepend>
-                            <b-button id="info">
-                                <b-icon-info-circle-fill />
-                            </b-button>
+                <search-input
+                    placeholder="Digite o termo de busca..."
+                    @submit="search_term"
+                >
+                    <template v-slot:prepend>
+                        <b-button id="info">
+                            <b-icon-info-circle-fill />
+                        </b-button>
 
-                            <b-popover
-                                target="info"
-                                triggers="hover"
-                                placement="bottom"
-                            >
-                                <template v-slot:title>
-                                    <b>Termo de busca?</b>
-                                </template>
-                                O termo de busta pode ser:
-                                <ul>
-                                    <li>
-                                        O número da linha
-                                    </li>
-                                    <li>
-                                        O nome da linha no sentido principal
-                                    </li>
-                                    <li>
-                                        O nome da linha no sentido secundário
-                                    </li>
-                                </ul>
-                            </b-popover>
-                        </template>
-
-                        <b-form-input
-                            placeholder="Digite o termo de busca..."
-                            required
-                            v-model="term"
-                        />
-
-                        <template v-slot:append>
-                            <b-button type="submit">
-                                <b-icon-search />
-                            </b-button>
-                        </template>
-                    </b-input-group>
-                </b-form>
+                        <b-popover
+                            target="info"
+                            triggers="hover"
+                            placement="bottom"
+                        >
+                            <template v-slot:title>
+                                <b>Termo de busca?</b>
+                            </template>
+                            O termo de busta pode ser:
+                            <ul>
+                                <li>
+                                    O número da linha
+                                </li>
+                                <li>
+                                    O nome da linha no sentido principal
+                                </li>
+                                <li>
+                                    O nome da linha no sentido secundário
+                                </li>
+                            </ul>
+                        </b-popover>
+                    </template>
+                </search-input>
             </b-col>
 
             <b-col cols="auto">
                 <dropdown-select-menu
                     title="Filtrar linhas pelo sentido"
                     offset="-75"
+                    selected="0"
                     :options="[
                         'Mostrar em ambos sentidos',
                         'Mostrar no sentido principal',
@@ -132,6 +122,7 @@
 
 <script>
 import DropdownSelectMenu from "@/components/DropdownSelectMenu";
+import SearchInput from "@/components/SearchInput";
 import API from "@/util/api";
 
 export default {
@@ -139,12 +130,12 @@ export default {
     name: "LinesPage",
 
     components: {
-        DropdownSelectMenu
+        DropdownSelectMenu,
+        SearchInput
     },
 
     data() {
         return {
-            term: "",
             filter_selected: 0, //0 = ambos sentidos; 1 = sentido principal; 2 = sentido secundário
             lines: [],
             filtered_lines: [],
@@ -161,10 +152,10 @@ export default {
     },
 
     methods: {
-        async search_term() {
+        async search_term(term) {
             try {
                 const response = await API.get("Linha/Buscar", {
-                    params: { termosBusca: this.term }
+                    params: { termosBusca: term }
                 });
                 const lines = response.data;
                 this.lines = [];
