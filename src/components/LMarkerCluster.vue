@@ -33,6 +33,10 @@ export default {
                     marker.bindPopup(data.text);
                 }
 
+                marker.on("click", () => {
+                    this.$emit("click", data);
+                });
+
                 this.markers.push(marker);
             });
 

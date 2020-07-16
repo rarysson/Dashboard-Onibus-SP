@@ -48,33 +48,22 @@
             </b-col>
 
             <b-col cols="auto">
-                <b-dropdown text="Filtrar linhas pelo sentido" offset="-75">
-                    <b-dropdown-item-button>
-                        <b-form-radio v-model="selected" value="0">
-                            Mostrar em ambos sentidos
-                        </b-form-radio>
-                    </b-dropdown-item-button>
-                    <b-dropdown-divider />
-
-                    <b-dropdown-item-button>
-                        <b-form-radio v-model="selected" value="1">
-                            Mostrar no sentido principal
-                        </b-form-radio>
-                    </b-dropdown-item-button>
-                    <b-dropdown-divider />
-
-                    <b-dropdown-item-button>
-                        <b-form-radio v-model="selected" value="2">
-                            Mostrar no sentido secundário
-                        </b-form-radio>
-                    </b-dropdown-item-button>
-                </b-dropdown>
+                <dropdown-select-menu
+                    title="Filtrar linhas pelo sentido"
+                    offset="-75"
+                    :options="[
+                        'Mostrar em ambos sentidos',
+                        'Mostrar no sentido principal',
+                        'Mostrar no sentido secundário'
+                    ]"
+                    @change="update_filter_selected"
+                />
             </b-col>
         </b-row>
 
         <b-row class="data-row">
             <b-col cols="12" style="overflow: hidden">
-                <b-list-group v-if="filtred_lines.length === 0">
+                <b-list-group v-if="filtered_lines.length === 0">
                     <b-list-group-item>
                         <b style="font-size: 1.5rem">
                             Nenhuma linha a ser mostrada
@@ -142,40 +131,32 @@
 </template>
 
 <script>
+import DropdownSelectMenu from "@/components/DropdownSelectMenu";
 import API from "@/util/api";
 
 export default {
     // Lines são as linhas que atendem diversas paradas de ônibus
     name: "LinesPage",
 
+    components: {
+        DropdownSelectMenu
+    },
+
     data() {
         return {
             term: "",
-            selected: 0, //0 = ambos sentidos; 1 = sentido principal; 2 = sentido secundário
+            filter_selected: 0, //0 = ambos sentidos; 1 = sentido principal; 2 = sentido secundário
             lines: [],
-            filtred_lines: [],
+            filtered_lines: [],
             paginated_lines: [],
             current_page: 1,
             per_page: 5
         };
     },
 
-    watch: {
-        selected(val) {
-            if (val == 0) {
-                this.filtred_lines = this.lines;
-            } else {
-                this.filtred_lines = this.lines.filter(line => line.way == val);
-            }
-
-            this.current_page = 1;
-            this.paginate(this.per_page, 0);
-        }
-    },
-
     computed: {
         total_rows() {
-            return this.filtred_lines.length;
+            return this.filtered_lines.length;
         }
     },
 
@@ -198,7 +179,7 @@ export default {
                     });
                 });
 
-                this.filtred_lines = this.lines;
+                this.filtered_lines = this.lines;
                 this.paginate(this.per_page, 0);
             } catch (error) {
                 console.log(error);
@@ -206,7 +187,7 @@ export default {
         },
 
         paginate(page_size, page_number) {
-            this.paginated_lines = this.filtred_lines.slice(
+            this.paginated_lines = this.filtered_lines.slice(
                 page_number * page_size,
                 (page_number + 1) * page_size
             );
@@ -218,6 +199,19 @@ export default {
 
         get_line_way(way) {
             return way === 1 ? "Principal" : "Secundário";
+        },
+
+        update_filter_selected(val) {
+            if (val == 0) {
+                this.filtered_lines = this.lines;
+            } else {
+                this.filtered_lines = this.lines.filter(
+                    line => line.way == val
+                );
+            }
+
+            this.current_page = 1;
+            this.paginate(this.per_page, 0);
         }
     }
 };

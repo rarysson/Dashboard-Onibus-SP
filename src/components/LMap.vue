@@ -1,5 +1,5 @@
 <template>
-    <div id="map-container">
+    <div id="map-container" class="map-container">
         <slot />
     </div>
 </template>
@@ -38,7 +38,7 @@ export default {
 @import "~leaflet.markercluster/dist/MarkerCluster.css";
 @import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
 
-#map-container {
+.map-container {
     height: 75vh;
     margin: 10px 0;
     border: 2px solid rgba(0, 0, 0, 0.6);

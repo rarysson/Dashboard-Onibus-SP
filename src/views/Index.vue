@@ -53,5 +53,6 @@ export default {
 .views-container {
     flex: 1;
     padding: 2.5vw 1vw 0.5vw;
+    height: 100%;
 }
 </style>
