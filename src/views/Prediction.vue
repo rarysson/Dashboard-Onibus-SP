@@ -1,21 +1,20 @@
 <template>
     <b-container fluid>
         <b-row>
-            <b-col>
+            <b-col cols="auto">
                 <dropdown-select-menu
                     title="Selecionar o tipo de pesquisa de previsão"
                     :options="[
                         'Pesquisar por uma parada',
                         'Pesquisar por uma linha',
-                        'Pesquisar por uma parada e linha'
+                        'Pesquisar por uma parada numa linha'
                     ]"
                     @change="update_prediction_option"
+                    @shown="hide_map"
+                    @hidden="show_map"
                 />
             </b-col>
-        </b-row>
-
-        <b-row v-if="prediction_option == 0 || prediction_option == 2">
-            <b-col cols="12">
+            <b-col v-if="prediction_option == 0" cols="auto">
                 <dropdown-select-menu
                     title="Selecionar o tipo de pesquisa de parada"
                     :options="[
@@ -26,17 +25,27 @@
                     @change="update_bustop_selected"
                 />
             </b-col>
-            <b-col cols="12" v-if="busstop_option == 0">
+            <b-col v-if="prediction_option !== null" style="text-align: right;">
+                <b-button
+                    :disabled="selected_busstop === null"
+                    @click="get_prediction"
+                >
+                    Pesquisar
+                </b-button>
+            </b-col>
+        </b-row>
+
+        <b-row v-if="busstop_option == 0">
+            <b-col cols="12">
                 <l-map ref="map" :options="map_options" class="map">
                     <l-marker-cluster
                         ref="cluster"
-                        v-if="selected_busstop === null"
                         :markers-icon="icon"
                         :options="cluster_options"
                         @cluster-created="show_markers_on_map"
-                        @click="marker_selected"
+                        @click="select_busstop"
                     />
-                    <div v-else>
+                    <div v-if="selected_busstop">
                         <l-marker
                             :marker-icon="icon"
                             :marker-data="selected_busstop"
@@ -55,9 +64,9 @@
             </b-col>
         </b-row>
 
-        <b-row v-if="prediction_option == 1 || prediction_option == 2">
+        <!-- <b-row v-if="prediction_option == 1 || prediction_option == 2">
             Pesquisa por linha Em obra
-            <!-- <b-col>
+            <b-col>
                 <dropdown-select-menu
                     title="Selecionar o tipo de pesquisa de linha"
                     :options="[
@@ -67,8 +76,8 @@
                     ]"
                     @change="update_bustop_selected"
                 />
-            </b-col> -->
-        </b-row>
+            </b-col>
+        </b-row> -->
     </b-container>
 </template>
 
@@ -181,14 +190,17 @@ export default {
             return way === 1 ? "Principal" : "Secundário";
         },
 
-        async marker_selected(busstop) {
+        select_busstop(busstop) {
+            this.selected_busstop = busstop;
+        },
+
+        async get_prediction() {
             try {
                 this.hide_markers_on_map();
                 this.$refs.map.map_object.setZoom(12);
-                this.selected_busstop = busstop;
 
                 const response = await API.get("/Previsao/Parada", {
-                    params: { codigoParada: busstop.id }
+                    params: { codigoParada: this.selected_busstop.id }
                 });
                 const lines = response.data.p.l;
 
@@ -207,9 +219,25 @@ export default {
             } catch (error) {
                 console.log(error);
             }
+        },
+
+        hide_map() {
+            if (this.$refs.map) {
+                this.$refs.map.$el.classList.toggle("hide-map");
+            }
+        },
+
+        show_map() {
+            if (this.$refs.map) {
+                this.$refs.map.$el.classList.toggle("hide-map");
+            }
         }
     }
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.hide-map {
+    z-index: -1;
+}
+</style>

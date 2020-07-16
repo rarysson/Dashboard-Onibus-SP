@@ -1,5 +1,5 @@
 <template>
-    <b-dropdown :text="title" :offset="offset">
+    <b-dropdown :text="title" :offset="offset" @shown="show" @hidden="hide">
         <b-dropdown-item-button
             v-for="(option, index) in options"
             :key="index"
@@ -27,6 +27,16 @@ export default {
     watch: {
         selected_item(val) {
             this.$emit("change", val);
+        }
+    },
+
+    methods: {
+        show() {
+            this.$emit("shown");
+        },
+
+        hide() {
+            this.$emit("hidden");
         }
     }
 };
