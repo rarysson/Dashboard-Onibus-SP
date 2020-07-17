@@ -42,7 +42,7 @@
                         <dropdown-select-menu
                             title="Filtrar linhas pelo sentido"
                             offset="-75"
-                            selected="0"
+                            :selected="way_option"
                             :options="[
                                 'Mostrar em ambos sentidos',
                                 'Mostrar no sentido principal',
@@ -57,7 +57,7 @@
                             title="Filtrar linhas pelo modo de operação"
                             empty-option="Pesquise alguma linha na barra de pesquisa"
                             :offset="get_offset_operation_menu()"
-                            selected="0"
+                            :selected="operation_option"
                             :options="operation_options"
                             @change="update_selected_operation_filter"
                         />
@@ -155,6 +155,8 @@ export default {
             filtered_lines: [],
             paginated_lines: [],
             operation_options: [],
+            way_option: 0,
+            operation_option: 0,
             current_page: 1,
             per_page: 5,
             old_term: ""
@@ -197,13 +199,12 @@ export default {
                     });
 
                     this.filtered_lines = this.lines;
+                    this.old_term = term;
                     this.paginate(this.per_page, 0);
                 } catch (error) {
                     console.log(error);
                 }
             }
-
-            this.old_term = term;
         },
 
         paginate(page_size, page_number) {
@@ -225,45 +226,28 @@ export default {
             return this.lines.length === 0 ? -60 : undefined;
         },
 
-        get_operation_options() {
-            // Itera todas as linhas e pega somente o modo de operação da linha
-            // Depois remove todos os modos que são iguais
-            // this.operation_options = [
-            //     ...new Set(this.lines.map(line => line.number.split("-")[1]))
-            // ];
-            // console.log(this.operation_options);
+        filter_result(val, filter_func) {
+            if (val == 0) {
+                this.filtered_lines = this.lines;
+                this.way_option = this.operation_option = 0;
+            } else {
+                this.filtered_lines = this.filtered_lines.filter(filter_func);
+            }
 
-            return this.operation_options;
+            this.current_page = 1;
+            this.paginate(this.per_page, 0);
         },
 
         update_selected_way_filter(val) {
-            if (val == 0) {
-                this.filtered_lines = this.lines;
-            } else {
-                this.filtered_lines = this.lines.filter(
-                    line => line.way == val
-                );
-            }
-
-            this.current_page = 1;
-            this.paginate(this.per_page, 0);
+            this.way_option = val;
+            this.filter_result(val, line => line.way == val);
         },
 
         update_selected_operation_filter(val) {
-            if (val == 0) {
-                this.filtered_lines = this.lines;
-            } else {
-                console.log(
-                    this.operation_options,
-                    this.operation_options[val]
-                );
-                this.filtered_lines = this.lines.filter(line =>
-                    line.number.includes(`-${this.operation_options[val + 1]}`)
-                );
-            }
-
-            this.current_page = 1;
-            this.paginate(this.per_page, 0);
+            this.operation_option = val;
+            this.filter_result(val, line =>
+                line.number.endsWith(`-${this.operation_options[val]}`)
+            );
         }
     }
 };

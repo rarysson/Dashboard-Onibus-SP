@@ -38,6 +38,10 @@ export default {
     watch: {
         selected_item(val) {
             this.$emit("change", val);
+        },
+
+        selected(val) {
+            this.selected_item = val;
         }
     },
 
