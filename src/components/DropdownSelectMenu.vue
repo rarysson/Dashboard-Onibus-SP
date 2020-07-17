@@ -1,5 +1,12 @@
 <template>
-    <b-dropdown :text="title" :offset="offset" @shown="show" @hidden="hide">
+    <b-dropdown
+        :text="title"
+        :offset="offset"
+        :block="block"
+        menu-class="dropdown-menu-class"
+        @shown="show"
+        @hidden="hide"
+    >
         <b-dropdown-item-button
             v-for="(option, index) in options"
             :key="index"
@@ -9,6 +16,9 @@
                 {{ option }}
             </b-form-radio>
         </b-dropdown-item-button>
+        <b-dropdown-item-button v-if="options.length === 0">
+            {{ emptyOption }}
+        </b-dropdown-item-button>
     </b-dropdown>
 </template>
 
@@ -16,11 +26,12 @@
 export default {
     name: "DropdownSelectMenu",
 
-    props: ["title", "options", "offset", "selected"],
+    props: ["title", "options", "offset", "selected", "block", "emptyOption"],
 
     data() {
         return {
-            selected_item: this.selected
+            selected_item: this.selected,
+            value_menu_class: null
         };
     },
 
@@ -42,12 +53,18 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .dropdown-select-item {
     padding: 0.35rem 0;
 }
 
 .dropdown-select-item:not(:last-child) {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu-class {
+    width: 100%;
+    max-height: 200px;
+    overflow: auto;
 }
 </style>

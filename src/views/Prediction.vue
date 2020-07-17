@@ -23,7 +23,7 @@
                         'Pesquisar por nome de rua/parada',
                         'Pesquisar por linha'
                     ]"
-                    @change="update_bustop_selected"
+                    @change="update_bustop_option"
                 />
             </b-col>
 
@@ -41,12 +41,57 @@
             <b-col style="margin-bottom: 20px;">
                 <search-input
                     placeholder="Digite o nome da rua ou parada..."
-                    @submit="search_term"
+                    @submit="
+                        search_bus_stop('/Parada/Buscar', 'termosBusca', $event)
+                    "
                 />
             </b-col>
         </b-row>
 
-        <b-row v-if="show_map()">
+        <b-row v-if="busstop_option == 2">
+            <b-col style="margin-bottom: 20px;" cols="12">
+                <search-input
+                    placeholder="Digite o nome da linha..."
+                    @submit="search_line"
+                >
+                    <template v-slot:append>
+                        <dropdown-select-menu
+                            title="Selecionar o sentido da linha"
+                            selected="0"
+                            :options="['Principal', 'Secundária']"
+                            @change="update_way_option"
+                        />
+                    </template>
+                </search-input>
+            </b-col>
+
+            <b-col style="margin-bottom: 20px; flex: 1;">
+                <dropdown-select-menu
+                    block
+                    title="Selecionar a linha"
+                    :options="get_lines_options()"
+                    empty-option="Pesquise a linha na barra de busca"
+                    @change="update_line_option"
+                    @shown="toggle_map"
+                    @hidden="toggle_map"
+                />
+            </b-col>
+            <b-col cols="auto">
+                <b-button
+                    @click="
+                        search_bus_stop(
+                            '/Parada/BuscarParadasPorLinha',
+                            'codigoLinha',
+                            lines[line_option].id
+                        )
+                    "
+                >
+                    Pesquisar linha
+                </b-button>
+            </b-col>
+        </b-row>
+
+        <b-row v-if="busstop_option !== null">
             <b-col cols="12">
                 <l-map ref="map" :options="map_options" class="map">
                     <l-marker-cluster
@@ -59,7 +104,7 @@
                     />
 
                     <l-marker-cluster
-                        v-else-if="busstop_option == 1"
+                        v-else-if="busstop_option == 1 || busstop_option == 2"
                         ref="cluster"
                         :markers-icon="icon"
                         :options="cluster_search_options"
@@ -87,7 +132,7 @@
         </b-row>
 
         <!-- <b-row v-if="prediction_option == 1 || prediction_option == 2">
-            Pesquisa por linha Em obra
+            Pesquisa por linha
             <b-col>
                 <dropdown-select-menu
                     title="Selecionar o tipo de pesquisa de linha"
@@ -96,7 +141,7 @@
                         'Pesquisar por nome de rua/parada',
                         'Pesquisar por linha'
                     ]"
-                    @change="update_bustop_selected"
+                    @change="update_bustop_option"
                 />
             </b-col>
         </b-row> -->
@@ -132,6 +177,8 @@ export default {
             all_bus_stop: [],
             predictions: [],
             selected_busstop: null,
+            way_option: 1,
+            lines: [],
 
             map_options: {
                 zoom: 12,
@@ -163,6 +210,8 @@ export default {
 
     watch: {
         async busstop_option(val) {
+            this.selected_busstop = null;
+
             if (val == 0) {
                 try {
                     const response = await API.get("Parada/Buscar", {
@@ -193,12 +242,16 @@ export default {
             this.prediction_option = val;
         },
 
-        update_bustop_selected(val) {
+        update_bustop_option(val) {
             this.busstop_option = val;
         },
 
         update_line_option(val) {
             this.line_option = val;
+        },
+
+        update_way_option(val) {
+            this.way_option = val + 1;
         },
 
         show_markers_on_map() {
@@ -215,6 +268,10 @@ export default {
 
         get_line_way(way) {
             return way === 1 ? "Principal" : "Secundário";
+        },
+
+        get_lines_options() {
+            return this.lines.map(line => `${line.number} » ${line.name}`);
         },
 
         select_busstop(busstop) {
@@ -254,14 +311,10 @@ export default {
             }
         },
 
-        show_map() {
-            return this.busstop_option == 0 || this.busstop_option == 1;
-        },
-
-        async search_term(term) {
+        async search_bus_stop(route, param, term) {
             try {
-                const response = await API.get("/Parada/Buscar", {
-                    params: { termosBusca: term }
+                const response = await API.get(route, {
+                    params: { [param]: term }
                 });
                 const lines = response.data;
                 const bus_stop = [];
@@ -277,6 +330,28 @@ export default {
                 });
 
                 this.$refs.cluster.set_markers_data(bus_stop);
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+        async search_line(term) {
+            try {
+                const response = await API.get("/Linha/BuscarLinhaSentido", {
+                    params: { termosBusca: term, sentido: this.way_option }
+                });
+                const data = response.data;
+                const lines = [];
+
+                data.forEach(line => {
+                    lines.push({
+                        id: line.cl,
+                        number: `${line.lt}-${line.tl}`,
+                        name: `${line.tp} - ${line.ts}`
+                    });
+                });
+
+                this.lines = lines;
             } catch (error) {
                 console.log(error);
             }

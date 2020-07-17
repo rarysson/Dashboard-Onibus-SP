@@ -8,6 +8,8 @@
             <b-form-input :placeholder="placeholder" required v-model="term" />
 
             <template v-slot:append>
+                <slot name="append" />
+
                 <b-button type="submit">
                     <b-icon-search />
                 </b-button>
