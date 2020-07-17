@@ -37,17 +37,32 @@
             </b-col>
 
             <b-col cols="auto">
-                <dropdown-select-menu
-                    title="Filtrar linhas pelo sentido"
-                    offset="-75"
-                    selected="0"
-                    :options="[
-                        'Mostrar em ambos sentidos',
-                        'Mostrar no sentido principal',
-                        'Mostrar no sentido secundário'
-                    ]"
-                    @change="update_filter_selected"
-                />
+                <b-row no-gutters>
+                    <b-col cols="auto" style="margin-right: 25px;">
+                        <dropdown-select-menu
+                            title="Filtrar linhas pelo sentido"
+                            offset="-75"
+                            selected="0"
+                            :options="[
+                                'Mostrar em ambos sentidos',
+                                'Mostrar no sentido principal',
+                                'Mostrar no sentido secundário'
+                            ]"
+                            @change="update_selected_way_filter"
+                        />
+                    </b-col>
+
+                    <b-col cols="auto">
+                        <dropdown-select-menu
+                            title="Filtrar linhas pelo modo de operação"
+                            empty-option="Pesquise alguma linha na barra de pesquisa"
+                            :offset="get_offset_operation_menu()"
+                            selected="0"
+                            :options="operation_options"
+                            @change="update_selected_operation_filter"
+                        />
+                    </b-col>
+                </b-row>
             </b-col>
         </b-row>
 
@@ -74,7 +89,7 @@
                         <span class="line-number">
                             <b>Número da linha</b>
                             <span class="line-info">
-                                {{ line.first_label }}-{{ line.second_label }}
+                                {{ line.number }}
                             </span>
                         </span>
                         <br />
@@ -136,12 +151,13 @@ export default {
 
     data() {
         return {
-            filter_selected: 0, //0 = ambos sentidos; 1 = sentido principal; 2 = sentido secundário
             lines: [],
             filtered_lines: [],
             paginated_lines: [],
+            operation_options: [],
             current_page: 1,
-            per_page: 5
+            per_page: 5,
+            old_term: ""
         };
     },
 
@@ -151,30 +167,43 @@ export default {
         }
     },
 
+    watch: {
+        lines() {
+            this.operation_options = [
+                ...new Set(this.lines.map(line => line.number.split("-")[1]))
+            ].sort();
+
+            this.operation_options.unshift("Mostrar em todos modos");
+        }
+    },
+
     methods: {
         async search_term(term) {
-            try {
-                const response = await API.get("Linha/Buscar", {
-                    params: { termosBusca: term }
-                });
-                const lines = response.data;
-                this.lines = [];
-
-                lines.forEach(line => {
-                    this.lines.push({
-                        first_label: line.lt,
-                        second_label: line.tl,
-                        name_1: line.tp,
-                        name_2: line.ts,
-                        way: line.sl
+            if (term != this.old_term) {
+                try {
+                    const response = await API.get("Linha/Buscar", {
+                        params: { termosBusca: term }
                     });
-                });
+                    const lines = response.data;
+                    this.lines = [];
 
-                this.filtered_lines = this.lines;
-                this.paginate(this.per_page, 0);
-            } catch (error) {
-                console.log(error);
+                    lines.forEach(line => {
+                        this.lines.push({
+                            number: `${line.lt}-${line.tl}`,
+                            name_1: line.tp,
+                            name_2: line.ts,
+                            way: line.sl
+                        });
+                    });
+
+                    this.filtered_lines = this.lines;
+                    this.paginate(this.per_page, 0);
+                } catch (error) {
+                    console.log(error);
+                }
             }
+
+            this.old_term = term;
         },
 
         paginate(page_size, page_number) {
@@ -192,12 +221,44 @@ export default {
             return way === 1 ? "Principal" : "Secundário";
         },
 
-        update_filter_selected(val) {
+        get_offset_operation_menu() {
+            return this.lines.length === 0 ? -60 : undefined;
+        },
+
+        get_operation_options() {
+            // Itera todas as linhas e pega somente o modo de operação da linha
+            // Depois remove todos os modos que são iguais
+            // this.operation_options = [
+            //     ...new Set(this.lines.map(line => line.number.split("-")[1]))
+            // ];
+            // console.log(this.operation_options);
+
+            return this.operation_options;
+        },
+
+        update_selected_way_filter(val) {
             if (val == 0) {
                 this.filtered_lines = this.lines;
             } else {
                 this.filtered_lines = this.lines.filter(
                     line => line.way == val
+                );
+            }
+
+            this.current_page = 1;
+            this.paginate(this.per_page, 0);
+        },
+
+        update_selected_operation_filter(val) {
+            if (val == 0) {
+                this.filtered_lines = this.lines;
+            } else {
+                console.log(
+                    this.operation_options,
+                    this.operation_options[val]
+                );
+                this.filtered_lines = this.lines.filter(line =>
+                    line.number.includes(`-${this.operation_options[val + 1]}`)
                 );
             }
 

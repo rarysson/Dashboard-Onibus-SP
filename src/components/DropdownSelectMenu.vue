@@ -63,7 +63,7 @@ export default {
 }
 
 .dropdown-menu-class {
-    width: 100%;
+    min-width: 100%;
     max-height: 200px;
     overflow: auto;
 }
