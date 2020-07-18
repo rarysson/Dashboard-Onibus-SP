@@ -95,7 +95,10 @@
                     </b-col>
 
                     <b-col>
-                        <b-button @click="filter">
+                        <b-button
+                            :disabled="user_point === null"
+                            @click="filter"
+                        >
                             Filtrar
                         </b-button>
                     </b-col>
@@ -111,7 +114,7 @@ import EyeIconMsg from "@/components/EyeIconMsg";
 import LMap from "@/components/LMap";
 import LMarkerCluster from "@/components/LMarkerCluster";
 import BusStopMapSearch from "@/components/BusStopMapSearch";
-import contains from "@/util/contains";
+import contains_point_on_circle from "@/util/contains";
 
 export default {
     name: "BusStopMapPage",
@@ -133,8 +136,8 @@ export default {
             distance: 1,
             user_point: null,
             filter_circle: null,
-            bus_stop: [],
             map: null,
+            bus_stop: [],
 
             icon: L.icon({
                 iconUrl: require("@/assets/icons_map/bus_stop.png"),
@@ -277,15 +280,18 @@ export default {
         },
 
         filter() {
-            const circle = { x: null, y: null };
-            ({ lat: circle.x, lng: circle.y } = this.filter_circle.getLatLng());
-
+            const circle = this.filter_circle.getLatLng();
             const radius = this.filter_circle.getRadius();
 
-            const point = { x: null, y: null };
-            ({ lat: point.x, lng: point.y } = this.user_point.getLatLng());
+            const bus_stop_filtered = this.bus_stop.filter(stop =>
+                contains_point_on_circle(circle, radius, {
+                    x: stop.px,
+                    y: stop.py
+                })
+            );
 
-            console.log(contains(circle, radius, point));
+            this.hide_markers_on_map();
+            this.$refs.cluster.reset_markers_data(bus_stop_filtered);
         }
     }
 };

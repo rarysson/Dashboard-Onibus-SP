@@ -1,9 +1,7 @@
-function contains(circle_center, circle_radius, point) {
-    const result =
-        Math.pow(circle_center.x - point.x, 2) +
-        Math.pow(circle_center.y - point.y, 2);
+import { latLng } from "leaflet";
 
-    return result <= Math.pow(circle_radius, 2);
+function contains_point_on_circle(circle, radius, point) {
+    return Math.abs(circle.distanceTo(latLng(point.y, point.x))) <= radius;
 }
 
-export default contains;
+export default contains_point_on_circle;
