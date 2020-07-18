@@ -6,27 +6,34 @@
 
 <script>
 import L from "leaflet";
+import { latLng } from "leaflet";
 
 export default {
     name: "LMap",
 
-    props: ["options"],
-
     data() {
         return {
-            map_object: null
+            map_object: null,
+            map_options: {
+                zoom: 12,
+                maxZoom: 18,
+                center: latLng(-23.5489, -46.6388), //Centro de São Paulo
+                url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                attribution:
+                    '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            }
         };
     },
 
     mounted() {
         const map = L.map("map-container", {
-            center: this.options.center,
-            zoom: this.options.zoom
+            center: this.map_options.center,
+            zoom: this.map_options.zoom
         });
 
-        L.tileLayer(this.options.url, {
-            maxZoom: this.options.maxZoom,
-            attribution: this.options.attribution
+        L.tileLayer(this.map_options.url, {
+            maxZoom: this.map_options.maxZoom,
+            attribution: this.map_options.attribution
         }).addTo(map);
 
         this.map_object = map;

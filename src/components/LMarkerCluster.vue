@@ -43,6 +43,14 @@ export default {
             this.marker_cluster.addLayers(this.markers);
 
             this.$emit("cluster-created");
+        },
+
+        reset_markers_data(markers_data, bind_text = true) {
+            this.marker_cluster.removeLayers(this.markers);
+            this.marker_cluster.refreshClusters();
+            this.markers = [];
+
+            this.set_markers_data(markers_data, bind_text);
         }
     }
 };

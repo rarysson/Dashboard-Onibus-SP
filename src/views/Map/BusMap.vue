@@ -19,7 +19,7 @@
         <b-row>
             <b-col>
                 <b-overlay :show="show_overlay">
-                    <l-map ref="map" :options="map_options">
+                    <l-map ref="map">
                         <l-marker-cluster
                             ref="cluster"
                             :markers-icon="icon"
@@ -41,7 +41,6 @@
 
 <script>
 import L from "leaflet";
-import { latLng } from "leaflet";
 import EyeIconMsg from "@/components/EyeIconMsg";
 import LMap from "@/components/LMap";
 import LMarkerCluster from "@/components/LMarkerCluster";
@@ -61,14 +60,6 @@ export default {
             show_overlay: false,
             show_buses: false,
             buses: [],
-            map_options: {
-                zoom: 12,
-                maxZoom: 18,
-                center: latLng(-23.5489, -46.6388), //Centro de São Paulo
-                url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                attribution:
-                    '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            },
 
             icon: L.icon({
                 iconUrl: require("@/assets/icons_map/bus.png"),
