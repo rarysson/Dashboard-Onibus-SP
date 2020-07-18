@@ -1,14 +1,21 @@
 <template>
     <b-container fluid>
+        <bus-map-search
+            @searching-data="toggle_overlay"
+            @data-searched="toggle_overlay"
+            @bus-searched="set_bus_data"
+        />
+
         <b-row>
             <b-col cols="auto">
                 <b-button
                     variant="primary"
                     size="sm"
-                    @click="get_buses_position"
+                    :disabled="buses.length === 0"
+                    @click="toggle_markers"
                 >
                     <eye-icon-msg
-                        :condition-var="show_buses"
+                        :condition-var="showing_buses"
                         visible-message="Mostrar todos ônibus"
                         hidden-message="Ocultar todos ônibus"
                     />
@@ -44,7 +51,8 @@ import L from "leaflet";
 import EyeIconMsg from "@/components/EyeIconMsg";
 import LMap from "@/components/LMap";
 import LMarkerCluster from "@/components/LMarkerCluster";
-import API from "@/util/api";
+import BusMapSearch from "@/components/BusMapSearch";
+// import API from "@/util/api";
 
 export default {
     name: "BusMapPage",
@@ -52,13 +60,21 @@ export default {
     components: {
         EyeIconMsg,
         LMap,
-        LMarkerCluster
+        LMarkerCluster,
+        BusMapSearch
     },
 
     data() {
         return {
             show_overlay: false,
-            show_buses: false,
+            showing_buses: true,
+            showing_user: true,
+            filter_result: false,
+            choosing_point: false,
+            distance: 1,
+            user_point: null,
+            filter_circle: null,
+            map: null,
             buses: [],
 
             icon: L.icon({
@@ -74,6 +90,16 @@ export default {
         };
     },
 
+    mounted() {
+        this.map = this.$refs.map.map_object;
+
+        this.map.on("locationfound", this.set_user_marker);
+
+        this.map.on("locationerror", e => {
+            console.log(e);
+        });
+    },
+
     watch: {
         show_overlay() {
             this.$refs.map.$el.classList.toggle("hide-map");
@@ -81,50 +107,70 @@ export default {
     },
 
     methods: {
-        async get_buses_position() {
-            if (this.buses.length === 0 && !this.show_buses) {
-                this.show_overlay = true;
+        get_bus_options() {
+            return [
+                { value: 0, text: "Pesquisar por todos ônibus" },
+                { value: 1, text: "Pesquisar por linha" },
+                { value: 2, text: "Pesquisar por empresa" }
+            ];
+        },
 
-                try {
-                    const response = await API.get("Posicao");
-                    const data = response.data.l;
-
-                    data.forEach(line => {
-                        line.vs.forEach(bus => {
-                            this.buses.push({
-                                accessible: bus.a,
-                                px: bus.px,
-                                py: bus.py
-                            });
-                        });
-                    });
-
-                    this.$refs.cluster.set_markers_data(this.buses, false);
-                    this.show_overlay = false;
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-
-            if (!this.show_buses) {
-                this.show_markers_on_map();
-            } else {
+        toggle_markers() {
+            if (this.showing_buses) {
                 this.hide_markers_on_map();
+            } else {
+                this.show_markers_on_map();
             }
 
-            this.show_buses = !this.show_buses;
+            this.showing_buses = !this.showing_buses;
+        },
+
+        toggle_overlay() {
+            this.show_overlay = !this.show_overlay;
         },
 
         show_markers_on_map() {
-            this.$refs.map.map_object.addLayer(
-                this.$refs.cluster.marker_cluster
-            );
+            this.map.addLayer(this.$refs.cluster.marker_cluster);
         },
 
         hide_markers_on_map() {
-            this.$refs.map.map_object.removeLayer(
-                this.$refs.cluster.marker_cluster
-            );
+            this.map.removeLayer(this.$refs.cluster.marker_cluster);
+        },
+
+        set_user_marker(event) {
+            if (this.user_point === null) {
+                this.user_point = L.marker(event.latlng)
+                    .addTo(this.map)
+                    .bindPopup("Você está aqui!");
+            } else {
+                this.user_point.setLatLng(event.latlng);
+            }
+
+            if (this.filter_circle === null) {
+                this.filter_circle = L.circle(
+                    event.latlng,
+                    this.distance * 1000
+                ).addTo(this.map);
+            } else {
+                this.filter_circle.setLatLng(event.latlng);
+                this.filter_circle.setRadius(this.distance * 1000);
+            }
+        },
+
+        set_bus_data(data) {
+            const old_data = this.buses;
+
+            if (this.buses.length !== 0) {
+                this.hide_markers_on_map();
+            }
+
+            this.buses = data;
+
+            if (old_data.length === 0) {
+                this.$refs.cluster.set_markers_data(this.buses, false);
+            } else {
+                this.$refs.cluster.reset_markers_data(this.buses, false);
+            }
         }
     }
 };
@@ -133,5 +179,9 @@ export default {
 <style scoped>
 .hide-map {
     z-index: -1;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
 }
 </style>

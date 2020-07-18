@@ -160,7 +160,7 @@ export default {
 
     watch: {
         show_overlay() {
-            this.toggle_map();
+            this.$refs.map.$el.classList.toggle("hide-map");
         },
 
         filter_result() {
@@ -221,12 +221,6 @@ export default {
         hide_user_mark_on_map() {
             this.map.removeLayer(this.filter_circle);
             this.map.removeLayer(this.user_point);
-        },
-
-        toggle_map() {
-            if (this.map) {
-                this.$refs.map.$el.classList.toggle("hide-map");
-            }
         },
 
         toggle_overlay() {

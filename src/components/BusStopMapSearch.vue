@@ -22,54 +22,20 @@
             />
         </b-col>
 
-        <template v-else-if="busstop_option == 2">
-            <b-col class="mb-20" cols="12">
-                <search-input
-                    placeholder="Digite o nome da linha..."
-                    @submit="search_line"
-                >
-                    <template v-slot:append v-if="busstop_option == 2">
-                        <dropdown-select-menu
-                            title="Selecione o sentido da parada"
-                            selected="0"
-                            :options="[
-                                { value: 0, text: 'Principal' },
-                                { value: 1, text: 'Secundária' }
-                            ]"
-                            @change="way_option = $event + 1"
-                        />
-                    </template>
-                </search-input>
-            </b-col>
-
-            <b-col class="mb-20 col-fill">
-                <dropdown-select-menu
-                    block
-                    title="Selecionar a linha"
-                    :options="get_lines_options()"
-                    empty-option="Pesquise a linha na barra de busca"
-                    @change="line_option = $event"
-                />
-            </b-col>
-            <b-col cols="auto">
-                <b-button
-                    @click="
-                        search_bus_stop(
-                            'Parada/BuscarParadasPorLinha',
-                            'codigoLinha',
-                            lines[line_option].id
-                        )
-                    "
-                >
-                    Pesquisar
-                </b-button>
-            </b-col>
-        </template>
+        <line-search
+            v-else-if="busstop_option == 2"
+            @line-searched="
+                search_bus_stop(
+                    'Parada/BuscarParadasPorLinha',
+                    'codigoLinha',
+                    $event.id
+                )
+            "
+        />
 
         <template v-else-if="busstop_option == 3">
             <b-col class="col-fill mb-20">
                 <dropdown-select-menu
-                    block
                     title="Selecionar o corredor"
                     :options="get_bus_lanes_options()"
                     @change="bus_lane_option = $event"
@@ -96,6 +62,7 @@
 <script>
 import DropdownSelectMenu from "@/components/DropdownSelectMenu";
 import SearchInput from "@/components/SearchInput";
+import LineSearch from "@/components/LineSearch";
 import API from "@/util/api";
 
 export default {
@@ -103,7 +70,8 @@ export default {
 
     components: {
         DropdownSelectMenu,
-        SearchInput
+        SearchInput,
+        LineSearch
     },
 
     data() {
@@ -111,6 +79,7 @@ export default {
             busstop_option: null,
             bus_lane_option: null,
             line_option: null,
+            selected_line: null,
             way_option: 1,
             lines: [],
             bus_lanes: [],
@@ -146,21 +115,6 @@ export default {
                 { value: 2, text: "Pesquisar por linha" },
                 { value: 3, text: "Pesquisar por corredor" }
             ];
-        },
-
-        get_lines_options() {
-            const options = [];
-
-            for (let i = 0; i < this.lines.length; i++) {
-                let line = this.lines[i];
-
-                options.push({
-                    value: i,
-                    text: `${line.number} » ${line.name}`
-                });
-            }
-
-            return options;
         },
 
         get_bus_lanes_options() {
@@ -227,32 +181,11 @@ export default {
                 });
 
                 this.$emit("bus-stop-searched", bus_stop);
-                this.$emit("data-searched");
             } catch (error) {
                 console.log(error);
             }
-        },
 
-        async search_line(term) {
-            try {
-                const response = await API.get("Linha/BuscarLinhaSentido", {
-                    params: { termosBusca: term, sentido: this.way_option }
-                });
-                const data = response.data;
-                const lines = [];
-
-                data.forEach(line => {
-                    lines.push({
-                        id: line.cl,
-                        number: `${line.lt}-${line.tl}`,
-                        name: `${line.tp} - ${line.ts}`
-                    });
-                });
-
-                this.lines = lines;
-            } catch (error) {
-                console.log(error);
-            }
+            this.$emit("data-searched");
         }
     }
 };
