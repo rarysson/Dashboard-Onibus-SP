@@ -17,7 +17,7 @@ export default {
             map_options: {
                 zoom: 12,
                 maxZoom: 18,
-                center: latLng(-23.5489, -46.6388), //Centro de São Paulo
+                center: latLng(-23.5489, -46.6388), // Centro de São Paulo
                 url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                 attribution:
                     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -46,7 +46,7 @@ export default {
 @import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 .map-container {
-    height: 75vh;
+    height: 65vh;
     margin: 10px 0;
     border: 2px solid rgba(0, 0, 0, 0.6);
     border-radius: 5px;

@@ -38,14 +38,12 @@ export default {
 
 <style scoped>
 .app-container {
-    /* padding: 1vw 1vw 0.5vw; */
     height: 100vh;
     display: flex;
-    align-items: flex-start;
 }
 
 .sidebar-container {
-    height: 100%;
+    min-height: 100%;
     padding-top: 1vw;
     flex-basis: 320px;
 }
