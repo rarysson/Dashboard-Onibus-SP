@@ -7,13 +7,14 @@
                         <dropdown-select-menu
                             title="Selecionar o tipo de pesquisa de previsão"
                             :options="[
-                                'Pesquisar por uma parada',
-                                'Pesquisar por uma linha',
-                                'Pesquisar por uma parada numa linha'
+                                { value: 0, text: 'Pesquisar por uma parada' },
+                                { value: 1, text: 'Pesquisar por uma linha' },
+                                {
+                                    value: 2,
+                                    text: 'Pesquisar por uma parada numa linha'
+                                }
                             ]"
                             @change="prediction_option = $event"
-                            @shown="toggle_map"
-                            @hidden="toggle_map"
                         />
                     </b-col>
 
@@ -34,8 +35,6 @@
             <b-col>
                 <bus-stop-map-search
                     v-if="prediction_option == 0"
-                    @shown="toggle_map"
-                    @hidden="toggle_map"
                     @searching-data="toggle_overlay"
                     @data-searched="toggle_overlay"
                     @bus-stop-searched="set_bus_stop_data"
@@ -154,7 +153,7 @@ export default {
         set_bus_stop_data(data) {
             const old_data = this.bus_stop;
 
-            if (this.bus_stop.length !== 0) {
+            if (this.predictions.length !== 0) {
                 this.hide_markers_on_map("cluster");
                 this.hide_markers_on_map("cluster_bus");
                 this.$refs.map.map_object.removeLayer(

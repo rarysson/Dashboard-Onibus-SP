@@ -4,15 +4,8 @@
             <dropdown-select-menu
                 title="Selecionar o tipo de pesquisa de parada"
                 class="mb-20"
-                :options="[
-                    'Pesquisar por todas paradas',
-                    'Pesquisar por nome de rua/parada',
-                    'Pesquisar por linha',
-                    'Pesquisar por corredor'
-                ]"
+                :options="get_bus_stop_options()"
                 @change="busstop_option = $event"
-                @shown="show"
-                @hidden="hide"
             />
         </b-col>
 
@@ -37,12 +30,13 @@
                 >
                     <template v-slot:append v-if="busstop_option == 2">
                         <dropdown-select-menu
-                            title="Selecionar o sentido da linha"
+                            title="Selecione o sentido da parada"
                             selected="0"
-                            :options="['Principal', 'Secundária']"
+                            :options="[
+                                { value: 0, text: 'Principal' },
+                                { value: 1, text: 'Secundária' }
+                            ]"
                             @change="way_option = $event + 1"
-                            @shown="show"
-                            @hidden="hide"
                         />
                     </template>
                 </search-input>
@@ -55,8 +49,6 @@
                     :options="get_lines_options()"
                     empty-option="Pesquise a linha na barra de busca"
                     @change="line_option = $event"
-                    @shown="show"
-                    @hidden="hide"
                 />
             </b-col>
             <b-col cols="auto">
@@ -81,8 +73,6 @@
                     title="Selecionar o corredor"
                     :options="get_bus_lanes_options()"
                     @change="bus_lane_option = $event"
-                    @shown="show"
-                    @hidden="hide"
                 />
             </b-col>
 
@@ -149,20 +139,43 @@ export default {
     },
 
     methods: {
+        get_bus_stop_options() {
+            return [
+                { value: 0, text: "Pesquisar por todas paradas" },
+                { value: 1, text: "Pesquisar por nome de rua/parada" },
+                { value: 2, text: "Pesquisar por linha" },
+                { value: 3, text: "Pesquisar por corredor" }
+            ];
+        },
+
         get_lines_options() {
-            return this.lines.map(line => `${line.number} » ${line.name}`);
+            const options = [];
+
+            for (let i = 0; i < this.lines.length; i++) {
+                let line = this.lines[i];
+
+                options.push({
+                    value: i,
+                    text: `${line.number} » ${line.name}`
+                });
+            }
+
+            return options;
         },
 
         get_bus_lanes_options() {
-            return this.bus_lanes.map(bus_lane => bus_lane.name);
-        },
+            const options = [];
 
-        show() {
-            this.$emit("shown");
-        },
+            for (let i = 0; i < this.bus_lanes.length; i++) {
+                let bus_lane = this.bus_lanes[i];
 
-        hide() {
-            this.$emit("hidden");
+                options.push({
+                    value: i,
+                    text: bus_lane.name
+                });
+            }
+
+            return options;
         },
 
         async search_all_bus_stop() {
