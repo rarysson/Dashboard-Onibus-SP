@@ -38,11 +38,12 @@
             </b-col>
         </b-row>
 
-        <b-row>
-            <b-col>
-                <h1>Linha para filtros</h1>
-            </b-col>
-        </b-row>
+        <distance-filter
+            ref="distance_filter"
+            :raw-data="buses"
+            @get-map-object="set_child_map($refs.distance_filter)"
+            @data-filtered="filter_data"
+        />
     </b-container>
 </template>
 
@@ -52,7 +53,7 @@ import EyeIconMsg from "@/components/EyeIconMsg";
 import LMap from "@/components/LMap";
 import LMarkerCluster from "@/components/LMarkerCluster";
 import BusMapSearch from "@/components/BusMapSearch";
-// import API from "@/util/api";
+import DistanceFilter from "@/components/DistanceFilter";
 
 export default {
     name: "BusMapPage",
@@ -61,19 +62,14 @@ export default {
         EyeIconMsg,
         LMap,
         LMarkerCluster,
-        BusMapSearch
+        BusMapSearch,
+        DistanceFilter
     },
 
     data() {
         return {
             show_overlay: false,
             showing_buses: true,
-            showing_user: true,
-            filter_result: false,
-            choosing_point: false,
-            distance: 1,
-            user_point: null,
-            filter_circle: null,
             map: null,
             buses: [],
 
@@ -92,12 +88,6 @@ export default {
 
     mounted() {
         this.map = this.$refs.map.map_object;
-
-        this.map.on("locationfound", this.set_user_marker);
-
-        this.map.on("locationerror", e => {
-            console.log(e);
-        });
     },
 
     watch: {
@@ -107,6 +97,10 @@ export default {
     },
 
     methods: {
+        set_child_map(child) {
+            child.set_map_object(this.map);
+        },
+
         toggle_markers() {
             if (this.showing_buses) {
                 this.hide_markers_on_map();
@@ -129,26 +123,6 @@ export default {
             this.map.removeLayer(this.$refs.cluster.marker_cluster);
         },
 
-        set_user_marker(event) {
-            if (this.user_point === null) {
-                this.user_point = L.marker(event.latlng)
-                    .addTo(this.map)
-                    .bindPopup("Você está aqui!");
-            } else {
-                this.user_point.setLatLng(event.latlng);
-            }
-
-            if (this.filter_circle === null) {
-                this.filter_circle = L.circle(
-                    event.latlng,
-                    this.distance * 1000
-                ).addTo(this.map);
-            } else {
-                this.filter_circle.setLatLng(event.latlng);
-                this.filter_circle.setRadius(this.distance * 1000);
-            }
-        },
-
         set_bus_data(data) {
             const old_data = this.buses;
 
@@ -163,6 +137,11 @@ export default {
             } else {
                 this.$refs.cluster.reset_markers_data(this.buses, false);
             }
+        },
+
+        filter_data(data) {
+            this.hide_markers_on_map();
+            this.$refs.cluster.reset_markers_data(data);
         }
     }
 };

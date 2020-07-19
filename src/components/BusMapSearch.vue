@@ -28,7 +28,10 @@
             </b-col>
 
             <b-col cols="auto" class="mb-20">
-                <b-button @click="search_company_buses">
+                <b-button
+                    :disabled="company_option === null"
+                    @click="search_company_buses"
+                >
                     Pesquisar
                 </b-button>
             </b-col>
@@ -142,7 +145,7 @@ export default {
                 }
             }
 
-            this.$emit("bus-searched", this.all_bus_stop);
+            this.$emit("bus-searched", this.all_buses);
             this.$emit("data-searched");
         },
 
