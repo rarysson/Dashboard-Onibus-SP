@@ -9,7 +9,17 @@ import "leaflet.markercluster";
 export default {
     name: "LMarkerCluster",
 
-    props: ["markersIcon", "options"],
+    props: {
+        markersIcon: {
+            type: Object,
+            required: true
+        },
+
+        options: {
+            type: Object,
+            required: true
+        }
+    },
 
     data() {
         return {

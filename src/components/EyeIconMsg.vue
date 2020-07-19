@@ -13,6 +13,21 @@
 export default {
     name: "EyeIconMsg",
 
-    props: ["conditionVar", "visibleMessage", "hiddenMessage"]
+    props: {
+        conditionVar: {
+            type: Boolean,
+            required: true
+        },
+
+        visibleMessage: {
+            type: String,
+            required: true
+        },
+
+        hiddenMessage: {
+            type: String,
+            required: true
+        }
+    }
 };
 </script>

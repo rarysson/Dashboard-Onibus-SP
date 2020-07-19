@@ -60,7 +60,16 @@
 export default {
     name: "PaginatedList",
 
-    props: ["rawData", "emptyOption", "properties"],
+    props: {
+        rawData: Array,
+
+        emptyOption: Object,
+
+        properties: {
+            type: Array,
+            required: true
+        }
+    },
 
     data() {
         return {

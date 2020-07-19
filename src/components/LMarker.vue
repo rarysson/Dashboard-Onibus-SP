@@ -8,7 +8,16 @@ import L from "leaflet";
 export default {
     name: "LMarker",
 
-    props: ["markerIcon", "markerData", "mapObject"],
+    props: {
+        markerIcon: {
+            type: Object,
+            required: true
+        },
+
+        markerData: Object,
+
+        mapObject: Object
+    },
 
     data() {
         return {

@@ -22,7 +22,12 @@
 export default {
     name: "SearchInput",
 
-    props: ["placeholder"],
+    props: {
+        placeholder: {
+            type: String,
+            required: true
+        }
+    },
 
     data() {
         return {

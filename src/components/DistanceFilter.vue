@@ -88,7 +88,14 @@ import contains_point_on_circle from "@/util/contains";
 export default {
     name: "DistanceFilter",
 
-    props: ["rawData", "mapObject"],
+    props: {
+        rawData: {
+            type: Array,
+            required: true
+        },
+
+        mapObject: Object
+    },
 
     components: {
         EyeIconMsg

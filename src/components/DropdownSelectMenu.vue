@@ -24,7 +24,21 @@
 export default {
     name: "DropdownSelectMenu",
 
-    props: ["title", "options", "selected", "emptyOption"],
+    props: {
+        title: {
+            type: String,
+            required: true
+        },
+
+        options: {
+            type: Array,
+            required: true
+        },
+
+        selected: [String, Number],
+
+        emptyOption: String
+    },
 
     data() {
         return {
