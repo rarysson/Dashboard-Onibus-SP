@@ -3,7 +3,9 @@
         <b-col>
             <b-row class="data-row">
                 <b-col cols="12">
-                    <b-list-group v-if="rawData === undefined">
+                    <b-list-group
+                        v-if="rawData === undefined || all_data.length === 0"
+                    >
                         <b-list-group-item>
                             <b style="font-size: 1.5rem">
                                 {{ emptyOption.title }}

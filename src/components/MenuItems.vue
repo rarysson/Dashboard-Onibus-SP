@@ -10,26 +10,32 @@
             <b-icon-map />
             Mapa dos ônibus
         </b-list-group-item>
+
         <b-list-group-item to="/map/busstop">
             <b-icon-map />
             Mapa das paradas
         </b-list-group-item>
+
         <b-list-group-item to="/infos/lines">
             <b-icon-info-circle />
             Ver informações das linhas
         </b-list-group-item>
-        <b-list-group-item to="/infos/companies">
-            <b-icon-info-circle />
-            Ver informações das empresas
-        </b-list-group-item>
+
         <b-list-group-item to="/infos/buslanes">
             <b-icon-info-circle />
             Ver informações dos corredores
         </b-list-group-item>
+
+        <b-list-group-item to="/infos/companies">
+            <b-icon-info-circle />
+            Ver informações das empresas
+        </b-list-group-item>
+
         <b-list-group-item to="/infos/lanes">
             <b-icon-info-circle />
             Ver informações das vias
         </b-list-group-item>
+
         <b-list-group-item to="/forecast">
             <b-icon-clock />
             Previsão de chegada numa parada
