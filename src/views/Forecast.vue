@@ -8,23 +8,22 @@
                             title="Selecionar o tipo de pesquisa de previsão"
                             :options="[
                                 { value: 0, text: 'Pesquisar por uma parada' },
-                                { value: 1, text: 'Pesquisar por uma linha' },
-                                {
-                                    value: 2,
-                                    text: 'Pesquisar por uma parada numa linha'
-                                }
+                                { value: 1, text: 'Pesquisar por uma linha' }
                             ]"
-                            @change="prediction_option = $event"
+                            @change="forecast_option = $event"
                         />
                     </b-col>
 
                     <b-col
-                        v-if="prediction_option !== null"
+                        v-if="forecast_option !== null"
                         style="text-align: right;"
                     >
                         <b-button
-                            :disabled="selected_busstop === null"
-                            @click="search_prediction"
+                            :disabled="
+                                selected_busstop === null &&
+                                    selected_line === null
+                            "
+                            @click="search_forecast"
                         >
                             Pesquisar Previsão
                         </b-button>
@@ -32,16 +31,20 @@
                 </b-row>
             </b-col>
 
-            <b-col>
+            <b-col v-if="forecast_option == 0">
                 <bus-stop-map-search
-                    v-if="prediction_option == 0"
                     @searching-data="toggle_overlay"
                     @data-searched="toggle_overlay"
                     @bus-stop-searched="set_bus_stop_data"
                 />
             </b-col>
 
-            <b-col cols="12" v-if="prediction_option == 0">
+            <line-search
+                v-else-if="forecast_option == 1"
+                @line-searched="selected_line = $event"
+            />
+
+            <b-col cols="12" v-if="forecast_option !== null">
                 <b-overlay :show="show_overlay">
                     <l-map ref="map">
                         <l-marker-cluster
@@ -76,6 +79,7 @@ import LMap from "@/components/LMap";
 import LMarkerCluster from "@/components/LMarkerCluster";
 import LMarker from "@/components/LMarker";
 import BusStopMapSearch from "@/components/BusStopMapSearch";
+import LineSearch from "@/components/LineSearch";
 import API from "@/util/api";
 
 export default {
@@ -86,16 +90,20 @@ export default {
         LMap,
         LMarkerCluster,
         LMarker,
-        BusStopMapSearch
+        BusStopMapSearch,
+        LineSearch
     },
 
     data() {
         return {
             show_overlay: false,
-            prediction_option: null,
-            predictions: [],
-            bus_stop: [],
+            already_set_map: false,
+            map: null,
+            forecast_option: null,
             selected_busstop: null,
+            selected_line: null,
+            forecasts: [],
+            bus_stop: [],
 
             icon: L.icon({
                 iconUrl: require("@/assets/icons_map/bus_stop.png"),
@@ -116,6 +124,13 @@ export default {
     watch: {
         show_overlay() {
             this.toggle_map();
+        },
+
+        forecast_option() {
+            if (!this.already_set_map) {
+                this.map = this.$refs.map.map_object;
+                this.already_set_map = true;
+            }
         }
     },
 
@@ -125,15 +140,11 @@ export default {
         },
 
         show_markers_on_map(cluster_name) {
-            this.$refs.map.map_object.addLayer(
-                this.$refs[cluster_name].marker_cluster
-            );
+            this.map.addLayer(this.$refs[cluster_name].marker_cluster);
         },
 
         hide_markers_on_map(cluster_name) {
-            this.$refs.map.map_object.removeLayer(
-                this.$refs[cluster_name].marker_cluster
-            );
+            this.map.removeLayer(this.$refs[cluster_name].marker_cluster);
         },
 
         select_busstop(busstop) {
@@ -153,12 +164,10 @@ export default {
         set_bus_stop_data(data) {
             const old_data = this.bus_stop;
 
-            if (this.predictions.length !== 0) {
+            if (this.forecasts.length !== 0) {
                 this.hide_markers_on_map("cluster");
                 this.hide_markers_on_map("cluster_bus");
-                this.$refs.map.map_object.removeLayer(
-                    this.$refs.user_marker.marker
-                );
+                this.map.removeLayer(this.$refs.user_marker.marker);
             }
 
             this.bus_stop = data;
@@ -170,19 +179,23 @@ export default {
             }
         },
 
-        async search_prediction() {
+        async search_forecast() {
             try {
                 this.hide_markers_on_map("cluster");
-                this.$refs.map.map_object.setZoom(12);
+                this.map.setZoom(12);
 
-                const response = await API.get("/Previsao/Parada", {
+                if (this.selected_busstop !== null) {
+                } else if (this.selected_line !== null) {
+                }
+
+                const response = await API.get("Previsao/Parada", {
                     params: { codigoParada: this.selected_busstop.id }
                 });
                 const lines = response.data.p.l;
 
                 lines.forEach(line => {
                     line.vs.forEach(bus => {
-                        this.predictions.push({
+                        this.forecasts.push({
                             px: bus.px,
                             py: bus.py,
                             text: `<b>Horário de previsão:</b> ${bus.t} <br>
@@ -195,9 +208,43 @@ export default {
 
                 this.$refs.user_marker.set_marker_data(
                     this.selected_busstop,
-                    this.$refs.map.map_object
+                    this.map
                 );
-                this.$refs.cluster_bus.set_markers_data(this.predictions);
+                this.$refs.cluster_bus.set_markers_data(this.forecasts);
+                this.selected_busstop = null;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+        async search_forecast_on_line(line) {
+            try {
+                this.hide_markers_on_map("cluster");
+                this.map.setZoom(12);
+
+                const response = await API.get("Previsao/Linha", {
+                    params: { codigoLinha: line.id }
+                });
+                const lines = response.data.p.l;
+
+                lines.forEach(line => {
+                    line.vs.forEach(bus => {
+                        this.forecasts.push({
+                            px: bus.px,
+                            py: bus.py,
+                            text: `<b>Horário de previsão:</b> ${bus.t} <br>
+                            <b>Origem:</b> ${line.lt1} <br>
+                            <b>Destino:</b> ${line.lt0} <br>
+                            <b>Sentido:</b> ${this.get_line_way(line.sl)}`
+                        });
+                    });
+                });
+
+                this.$refs.user_marker.set_marker_data(
+                    this.selected_busstop,
+                    this.map
+                );
+                this.$refs.cluster_bus.set_markers_data(this.forecasts);
                 this.selected_busstop = null;
             } catch (error) {
                 console.log(error);
@@ -210,13 +257,5 @@ export default {
 <style scoped>
 .hide-map {
     z-index: -1;
-}
-
-.mb-20 {
-    margin-bottom: 20px;
-}
-
-.col-fill {
-    flex: 1;
 }
 </style>

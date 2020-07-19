@@ -149,12 +149,4 @@ export default {
 .hide-map {
     z-index: -1;
 }
-
-.mb-20 {
-    margin-bottom: 20px;
-}
-
-.mr-20 {
-    margin-right: 20px;
-}
 </style>

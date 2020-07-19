@@ -199,13 +199,3 @@ export default {
     }
 };
 </script>
-
-<style scoped>
-.mb-20 {
-    margin-bottom: 20px;
-}
-
-.mr-20 {
-    margin-right: 20px;
-}
-</style>
