@@ -15,14 +15,11 @@
                     </b-col>
 
                     <b-col
-                        v-if="forecast_option !== null"
+                        v-if="forecast_option == 0"
                         style="text-align: right;"
                     >
                         <b-button
-                            :disabled="
-                                selected_busstop === null &&
-                                    selected_line === null
-                            "
+                            :disabled="selected_busstop === null"
                             @click="search_forecast"
                         >
                             Pesquisar Previsão
@@ -41,30 +38,34 @@
 
             <line-search
                 v-else-if="forecast_option == 1"
-                @line-searched="selected_line = $event"
+                @line-searched="set_lines_data"
             />
 
-            <b-col cols="12" v-if="forecast_option !== null">
+            <b-col cols="12">
                 <b-overlay :show="show_overlay">
                     <l-map ref="map">
-                        <l-marker-cluster
-                            ref="cluster"
-                            :markers-icon="icon"
-                            :options="cluster_options"
-                            @cluster-created="show_markers_on_map('cluster')"
-                            @click="select_busstop"
-                        />
+                        <template v-if="forecast_option !== null">
+                            <l-marker-cluster
+                                ref="cluster"
+                                :markers-icon="icon"
+                                :options="cluster_options"
+                                @cluster-created="
+                                    show_markers_on_map('cluster')
+                                "
+                                @click="select_busstop"
+                            />
 
-                        <l-marker ref="user_marker" :marker-icon="icon" />
+                            <l-marker ref="user_marker" :marker-icon="icon" />
 
-                        <l-marker-cluster
-                            ref="cluster_bus"
-                            :markers-icon="icon_bus"
-                            :options="cluster_options"
-                            @cluster-created="
-                                show_markers_on_map('cluster_bus')
-                            "
-                        />
+                            <l-marker-cluster
+                                ref="cluster_bus"
+                                :markers-icon="icon_bus"
+                                :options="cluster_options"
+                                @cluster-created="
+                                    show_markers_on_map('cluster_bus')
+                                "
+                            />
+                        </template>
                     </l-map>
                 </b-overlay>
             </b-col>
@@ -104,6 +105,7 @@ export default {
             selected_line: null,
             forecasts: [],
             bus_stop: [],
+            lines: [],
 
             icon: L.icon({
                 iconUrl: require("@/assets/icons_map/bus_stop.png"),
@@ -152,9 +154,7 @@ export default {
         },
 
         toggle_map() {
-            if (this.$refs.map) {
-                this.$refs.map.$el.classList.toggle("hide-map");
-            }
+            this.$refs.map.$el.classList.toggle("hide-map");
         },
 
         toggle_overlay() {
@@ -167,7 +167,10 @@ export default {
             if (this.forecasts.length !== 0) {
                 this.hide_markers_on_map("cluster");
                 this.hide_markers_on_map("cluster_bus");
-                this.map.removeLayer(this.$refs.user_marker.marker);
+
+                if (this.bus_stop.length !== 0) {
+                    this.map.removeLayer(this.$refs.user_marker.marker);
+                }
             }
 
             this.bus_stop = data;
@@ -179,57 +182,34 @@ export default {
             }
         },
 
-        async search_forecast() {
-            try {
+        async set_lines_data(data) {
+            if (this.forecasts.length !== 0) {
                 this.hide_markers_on_map("cluster");
-                this.map.setZoom(12);
+                this.hide_markers_on_map("cluster_bus");
+                this.map.removeLayer(this.$refs.user_marker.marker);
+            }
 
-                if (this.selected_busstop !== null) {
-                } else if (this.selected_line !== null) {
-                }
+            this.selected_line = data;
 
-                const response = await API.get("Previsao/Parada", {
-                    params: { codigoParada: this.selected_busstop.id }
-                });
-                const lines = response.data.p.l;
-
-                lines.forEach(line => {
-                    line.vs.forEach(bus => {
-                        this.forecasts.push({
-                            px: bus.px,
-                            py: bus.py,
-                            text: `<b>Horário de previsão:</b> ${bus.t} <br>
-                            <b>Origem:</b> ${line.lt1} <br>
-                            <b>Destino:</b> ${line.lt0} <br>
-                            <b>Sentido:</b> ${this.get_line_way(line.sl)}`
-                        });
-                    });
-                });
-
-                this.$refs.user_marker.set_marker_data(
-                    this.selected_busstop,
-                    this.map
-                );
-                this.$refs.cluster_bus.set_markers_data(this.forecasts);
-                this.selected_busstop = null;
+            try {
+                this.search_forecast();
             } catch (error) {
                 console.log(error);
             }
         },
 
-        async search_forecast_on_line(line) {
+        async search_busstop_forecast() {
+            // eslint-disable-next-line no-useless-catch
             try {
-                this.hide_markers_on_map("cluster");
-                this.map.setZoom(12);
-
-                const response = await API.get("Previsao/Linha", {
-                    params: { codigoLinha: line.id }
+                const response = await API.get("Previsao/Parada", {
+                    params: { codigoParada: this.selected_busstop.id }
                 });
                 const lines = response.data.p.l;
+                const data = [];
 
                 lines.forEach(line => {
                     line.vs.forEach(bus => {
-                        this.forecasts.push({
+                        data.push({
                             px: bus.px,
                             py: bus.py,
                             text: `<b>Horário de previsão:</b> ${bus.t} <br>
@@ -240,12 +220,58 @@ export default {
                     });
                 });
 
-                this.$refs.user_marker.set_marker_data(
-                    this.selected_busstop,
-                    this.map
-                );
+                return data;
+            } catch (error) {
+                throw error;
+            }
+        },
+
+        async search_line_forecast() {
+            // eslint-disable-next-line no-useless-catch
+            try {
+                const response = await API.get("Previsao/Linha", {
+                    params: { codigoLinha: this.selected_line.id }
+                });
+                const lines = response.data.ps;
+                const data = [];
+
+                lines.forEach(line => {
+                    line.vs.forEach(bus => {
+                        data.push({
+                            px: bus.px,
+                            py: bus.py,
+                            text: `<b>Horário de previsão:</b> ${bus.t}`
+                        });
+                    });
+                });
+
+                return data;
+            } catch (error) {
+                throw error;
+            }
+        },
+
+        async search_forecast() {
+            try {
+                this.hide_markers_on_map("cluster");
+
+                if (this.selected_busstop !== null) {
+                    this.bus_stop = await this.search_busstop_forecast();
+                    this.forecasts = this.bus_stop;
+
+                    this.$refs.user_marker.set_marker_data(
+                        this.selected_busstop,
+                        this.map
+                    );
+
+                    this.selected_busstop = null;
+                } else if (this.selected_line !== null) {
+                    this.lines = await this.search_line_forecast();
+                    this.forecasts = this.lines;
+                    this.selected_line = null;
+                }
+
                 this.$refs.cluster_bus.set_markers_data(this.forecasts);
-                this.selected_busstop = null;
             } catch (error) {
                 console.log(error);
             }
