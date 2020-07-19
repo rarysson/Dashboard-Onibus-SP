@@ -45,9 +45,9 @@ const routes = [
                 component: () => import("../views/Infos/Companies.vue")
             },
             {
-                path: "prediction",
-                name: "Prediction",
-                component: () => import("../views/Prediction.vue")
+                path: "forecast",
+                name: "Forecast",
+                component: () => import("../views/Forecast.vue")
             }
         ]
     }

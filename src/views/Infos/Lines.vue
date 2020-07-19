@@ -38,15 +38,19 @@
 
             <b-col cols="auto">
                 <b-row no-gutters>
-                    <b-col cols="auto" style="margin-right: 25px;">
+                    <b-col cols="auto" class="mr-20">
                         <dropdown-select-menu
                             title="Filtrar linhas pelo sentido"
-                            offset="-75"
-                            :selected="way_option"
                             :options="[
-                                'Mostrar em ambos sentidos',
-                                'Mostrar no sentido principal',
-                                'Mostrar no sentido secundário'
+                                { value: 0, text: 'Mostrar em ambos sentidos' },
+                                {
+                                    value: 1,
+                                    text: 'Mostrar no sentido principal'
+                                },
+                                {
+                                    value: 2,
+                                    text: 'Mostrar no sentido secundário'
+                                }
                             ]"
                             @change="update_selected_way_filter"
                         />
@@ -56,9 +60,7 @@
                         <dropdown-select-menu
                             title="Filtrar linhas pelo modo de operação"
                             empty-option="Pesquise alguma linha na barra de pesquisa"
-                            :offset="get_offset_operation_menu()"
-                            :selected="operation_option"
-                            :options="operation_options"
+                            :options="get_operation_options()"
                             @change="update_selected_operation_filter"
                         />
                     </b-col>
@@ -66,78 +68,19 @@
             </b-col>
         </b-row>
 
-        <b-row class="data-row">
-            <b-col cols="12" style="overflow: hidden">
-                <b-list-group v-if="filtered_lines.length === 0">
-                    <b-list-group-item>
-                        <b style="font-size: 1.5rem">
-                            Nenhuma linha a ser mostrada
-                        </b>
-                        <br />
-                        <i style="font-size: 0.8rem">
-                            Procure alguma linha na barra de pesquisa
-                        </i>
-                    </b-list-group-item>
-                </b-list-group>
-
-                <b-list-group v-else id="lines-list">
-                    <b-list-group-item
-                        v-for="(line, index) in paginated_lines"
-                        :key="index"
-                        class="line-list-item"
-                    >
-                        <span class="line-number">
-                            <b>Número da linha</b>
-                            <span class="line-info">
-                                {{ line.number }}
-                            </span>
-                        </span>
-                        <br />
-
-                        <span class="way">
-                            <b>Sentido principal</b>
-                            <span class="line-info">
-                                {{ line.name_1 }}
-                            </span>
-                        </span>
-                        <br />
-
-                        <span class="way">
-                            <b>Sentido secundário</b>
-                            <span class="line-info">
-                                {{ line.name_2 }}
-                            </span>
-                        </span>
-                        <br />
-
-                        <span class="way">
-                            <b>Atende sentido</b>
-                            <span class="line-info">
-                                {{ get_line_way(line.way) }}
-                            </span>
-                        </span>
-                    </b-list-group-item>
-                </b-list-group>
-            </b-col>
-        </b-row>
-
-        <b-row>
-            <b-col>
-                <b-pagination
-                    align="right"
-                    v-model="current_page"
-                    :total-rows="total_rows"
-                    :per-page="per_page"
-                    @change="page_changed"
-                />
-            </b-col>
-        </b-row>
+        <paginated-list
+            ref="list"
+            :raw-data="filtered_lines"
+            :empty-option="empty_option"
+            :properties="properties"
+        />
     </b-container>
 </template>
 
 <script>
 import DropdownSelectMenu from "@/components/DropdownSelectMenu";
 import SearchInput from "@/components/SearchInput";
+import PaginatedList from "@/components/PaginatedList";
 import API from "@/util/api";
 
 export default {
@@ -146,40 +89,93 @@ export default {
 
     components: {
         DropdownSelectMenu,
-        SearchInput
+        SearchInput,
+        PaginatedList
     },
 
     data() {
         return {
             lines: [],
             filtered_lines: [],
-            paginated_lines: [],
             operation_options: [],
             way_option: 0,
             operation_option: 0,
-            current_page: 1,
-            per_page: 5,
-            old_term: ""
+            old_term: "",
+            empty_option: {
+                title: "Nenhuma linha a ser mostrada",
+                subtitle: "Procure alguma linha na barrade pesquisa"
+            },
+            properties: [
+                { title: "Número da linha", key: "number" },
+                { title: "Sentido principal", key: "name_1" },
+                { title: "Sentido secundário", key: "name_2" },
+                { title: "Atende sentido", key: "way" }
+            ]
         };
-    },
-
-    computed: {
-        total_rows() {
-            return this.filtered_lines.length;
-        }
     },
 
     watch: {
         lines() {
-            this.operation_options = [
-                ...new Set(this.lines.map(line => line.number.split("-")[1]))
-            ].sort();
+            if (this.lines.length !== 0) {
+                this.operation_options = [
+                    ...new Set(
+                        this.lines.map(line => line.number.split("-")[1])
+                    )
+                ].sort();
 
-            this.operation_options.unshift("Mostrar em todos modos");
+                this.operation_options.unshift("Mostrar em todos modos");
+            }
         }
     },
 
     methods: {
+        get_operation_options() {
+            const options = [];
+
+            for (let i = 0; i < this.operation_options.length; i++) {
+                options.push({
+                    value: i,
+                    text: this.operation_options[i]
+                });
+            }
+
+            return options;
+        },
+
+        get_line_way_text(way) {
+            return way === 1 ? "Principal" : "Secundário";
+        },
+
+        get_line_way_number(way) {
+            return way === "Principal" ? 1 : 2;
+        },
+
+        filter_result(val, filter_func) {
+            if (val == 0) {
+                this.filtered_lines = this.lines;
+                this.way_option = this.operation_option = 0;
+            } else {
+                this.filtered_lines = this.filtered_lines.filter(filter_func);
+            }
+
+            this.$refs.list.reset_data(this.filtered_lines);
+        },
+
+        update_selected_way_filter(val) {
+            this.way_option = val;
+            this.filter_result(
+                val,
+                line => this.get_line_way_number(line.way) == val
+            );
+        },
+
+        update_selected_operation_filter(val) {
+            this.operation_option = val;
+            this.filter_result(val, line =>
+                line.number.endsWith(`-${this.operation_options[val]}`)
+            );
+        },
+
         async search_term(term) {
             if (term != this.old_term) {
                 try {
@@ -194,60 +190,17 @@ export default {
                             number: `${line.lt}-${line.tl}`,
                             name_1: line.tp,
                             name_2: line.ts,
-                            way: line.sl
+                            way: this.get_line_way_text(line.sl)
                         });
                     });
 
                     this.filtered_lines = this.lines;
                     this.old_term = term;
-                    this.paginate(this.per_page, 0);
+                    this.$refs.list.reset_data(this.filtered_lines);
                 } catch (error) {
                     console.log(error);
                 }
             }
-        },
-
-        paginate(page_size, page_number) {
-            this.paginated_lines = this.filtered_lines.slice(
-                page_number * page_size,
-                (page_number + 1) * page_size
-            );
-        },
-
-        page_changed(page) {
-            this.paginate(this.per_page, page - 1);
-        },
-
-        get_line_way(way) {
-            return way === 1 ? "Principal" : "Secundário";
-        },
-
-        get_offset_operation_menu() {
-            return this.lines.length === 0 ? -60 : undefined;
-        },
-
-        filter_result(val, filter_func) {
-            if (val == 0) {
-                this.filtered_lines = this.lines;
-                this.way_option = this.operation_option = 0;
-            } else {
-                this.filtered_lines = this.filtered_lines.filter(filter_func);
-            }
-
-            this.current_page = 1;
-            this.paginate(this.per_page, 0);
-        },
-
-        update_selected_way_filter(val) {
-            this.way_option = val;
-            this.filter_result(val, line => line.way == val);
-        },
-
-        update_selected_operation_filter(val) {
-            this.operation_option = val;
-            this.filter_result(val, line =>
-                line.number.endsWith(`-${this.operation_options[val]}`)
-            );
         }
     }
 };

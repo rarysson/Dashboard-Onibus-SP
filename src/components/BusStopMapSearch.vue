@@ -44,6 +44,7 @@
 
             <b-col cols="auto" class="mb-20">
                 <b-button
+                    :disabled="bus_lane_option === null"
                     @click="
                         search_bus_stop(
                             'Parada/BuscarParadasPorCorredor',

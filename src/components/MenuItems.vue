@@ -30,7 +30,7 @@
             <b-icon-info-circle />
             Ver informações das vias
         </b-list-group-item>
-        <b-list-group-item to="/prediction">
+        <b-list-group-item to="/forecast">
             <b-icon-clock />
             Previsão de chegada numa parada
         </b-list-group-item>

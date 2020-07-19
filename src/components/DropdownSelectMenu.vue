@@ -10,7 +10,11 @@
             </b-form-select-option>
         </template>
 
-        <b-form-select-option v-if="options.length === 0" :value="null">
+        <b-form-select-option
+            v-if="options.length === 0"
+            :value="null"
+            disabled
+        >
             {{ emptyOption }}
         </b-form-select-option>
     </b-form-select>

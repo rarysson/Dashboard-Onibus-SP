@@ -79,7 +79,7 @@ import BusStopMapSearch from "@/components/BusStopMapSearch";
 import API from "@/util/api";
 
 export default {
-    name: "PredictionPage",
+    name: "ForecastPage",
 
     components: {
         DropdownSelectMenu,

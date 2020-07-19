@@ -30,7 +30,10 @@
                 />
             </b-col>
             <b-col cols="auto">
-                <b-button @click="$emit('line-searched', lines[line_index])">
+                <b-button
+                    :disabled="line_index === null"
+                    @click="$emit('line-searched', lines[line_index])"
+                >
                     Pesquisar
                 </b-button>
             </b-col>
