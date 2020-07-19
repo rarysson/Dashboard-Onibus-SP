@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Index from "../views/Index.vue";
+import Home from "../views/Home.vue";
 
 Vue.use(VueRouter);
 
@@ -12,7 +13,7 @@ const routes = [
             {
                 path: "",
                 name: "Home",
-                component: () => import("../views/Home.vue")
+                component: Home
             },
             {
                 path: "map/busstop",
@@ -28,11 +29,6 @@ const routes = [
                 path: "infos/lines",
                 name: "Lines",
                 component: () => import("../views/Infos/Lines.vue")
-            },
-            {
-                path: "infos/lanes",
-                name: "Lanes",
-                component: () => import("../views/Infos/Lanes.vue")
             },
             {
                 path: "infos/buslanes",
