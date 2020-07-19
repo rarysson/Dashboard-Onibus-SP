@@ -107,14 +107,6 @@ export default {
     },
 
     methods: {
-        get_bus_options() {
-            return [
-                { value: 0, text: "Pesquisar por todos ônibus" },
-                { value: 1, text: "Pesquisar por linha" },
-                { value: 2, text: "Pesquisar por empresa" }
-            ];
-        },
-
         toggle_markers() {
             if (this.showing_buses) {
                 this.hide_markers_on_map();

@@ -13,7 +13,7 @@ export default {
 
 <style scoped>
 .home-container {
-    height: 100%;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;

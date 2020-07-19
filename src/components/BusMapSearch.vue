@@ -18,7 +18,7 @@
             @line-searched="search_bus_on_line"
         />
 
-        <template v-else-if="bus_option == 3">
+        <template v-else-if="bus_option == 2">
             <b-col class="col-fill mb-20">
                 <dropdown-select-menu
                     title="Selecionar a empresa"
@@ -63,17 +63,27 @@ export default {
 
     watch: {
         async bus_option(val) {
-            if (val == 3 && this.companies.length === 0) {
+            if (val == 2 && this.companies.length === 0) {
                 try {
                     const response = await API.get("Empresa");
                     const data = response.data.e;
 
-                    data.forEach(bus_lane => {
-                        this.bus_lanes.push({
-                            name: bus_lane.nc,
-                            id: bus_lane.cc
+                    data.forEach(area => {
+                        area.e.forEach(company => {
+                            this.companies.push({
+                                name: company.n,
+                                id: company.c
+                            });
                         });
                     });
+
+                    // Método para tornar um array de objetos com dados únicos
+                    this.companies = this.companies.filter(
+                        (elem, index, self) =>
+                            self.findIndex(t => {
+                                return t.id === elem.id && t.name === elem.name;
+                            }) === index
+                    );
                 } catch (error) {
                     console.log(error);
                 }
@@ -86,11 +96,22 @@ export default {
             return [
                 { value: 0, text: "Pesquisar por todos ônibus" },
                 { value: 1, text: "Pesquisar por linha" },
-                { value: 2, text: "Pesquisar por empresa" }
+                { value: 2, text: "Pesquisar os ônibus na garagem" }
             ];
         },
 
-        get_companies_options() {},
+        get_companies_options() {
+            const options = [];
+
+            for (let i = 0; i < this.companies.length; i++) {
+                options.push({
+                    value: i,
+                    text: this.companies[i].name
+                });
+            }
+
+            return options;
+        },
 
         get_time(time) {
             const date = new Date(time);
@@ -109,9 +130,10 @@ export default {
                     data.forEach(line => {
                         line.vs.forEach(bus => {
                             this.all_buses.push({
-                                accessible: bus.a,
+                                id: bus.p,
                                 px: bus.px,
-                                py: bus.py
+                                py: bus.py,
+                                accessible: bus.a
                             });
                         });
                     });
@@ -151,7 +173,36 @@ export default {
             this.$emit("data-searched");
         },
 
-        async search_company_buses() {}
+        async search_company_buses() {
+            this.$emit("searching-data");
+
+            try {
+                const response = await API.get("Posicao/Garagem", {
+                    params: {
+                        codigoEmpresa: this.companies[this.company_option].id
+                    }
+                });
+                const data = response.data.l;
+                const buses = [];
+
+                data.forEach(line => {
+                    line.vs.forEach(bus => {
+                        buses.push({
+                            id: bus.p,
+                            px: bus.px,
+                            py: bus.py,
+                            accessible: bus.a
+                        });
+                    });
+                });
+
+                this.$emit("bus-searched", buses);
+            } catch (error) {
+                console.log(error);
+            }
+
+            this.$emit("data-searched");
+        }
     }
 };
 </script>
