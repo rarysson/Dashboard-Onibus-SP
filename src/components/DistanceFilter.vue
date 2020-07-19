@@ -14,9 +14,9 @@
 
                 <b-col v-if="filter_result" cols="auto">
                     <b-button
-                        variant="primary"
                         size="sm"
                         class="mr-20"
+                        :variant="user_point === null ? 'secondary' : 'info'"
                         :disabled="user_point === null"
                         @click="toggle_user_marker"
                     >
@@ -27,12 +27,21 @@
                         />
                     </b-button>
 
-                    <b-button size="sm" class="mr-20" @click="find_me">
+                    <b-button
+                        variant="primary"
+                        size="sm"
+                        class="mr-20"
+                        @click="find_me"
+                    >
                         <b-icon-geo-alt />
                         Me encontrar
                     </b-button>
 
-                    <b-button size="sm" :pressed.sync="choosing_point">
+                    <b-button
+                        size="sm"
+                        :variant="choosing_point ? 'info' : 'primary'"
+                        :pressed.sync="choosing_point"
+                    >
                         <b-icon-hand-index-thumb />
                         <span v-if="!choosing_point">
                             Selecionar ponto no mapa
@@ -59,7 +68,8 @@
 
                 <b-col>
                     <b-button
-                        :disabled="rawData.length === 0 || user_point === null"
+                        :variant="disabled() ? 'secondary' : 'primary'"
+                        :disabled="disabled()"
                         @click="filter"
                     >
                         Filtrar
@@ -129,6 +139,10 @@ export default {
     },
 
     methods: {
+        disabled() {
+            return this.rawData.length === 0 || this.user_point === null;
+        },
+
         set_map_object(map) {
             this.map = map;
 

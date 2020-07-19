@@ -9,8 +9,8 @@
         <b-row>
             <b-col cols="auto">
                 <b-button
-                    variant="primary"
                     size="sm"
+                    :variant="bus_stop.length === 0 ? 'secondary' : 'info'"
                     :disabled="bus_stop.length === 0"
                     @click="toggle_markers"
                 >

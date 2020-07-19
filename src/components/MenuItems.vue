@@ -1,5 +1,5 @@
 <template>
-    <b-list-group>
+    <b-list-group @click="item_selected">
         <b-img
             src="../assets/logos/logo.png"
             alt="logo sp trans"
@@ -40,7 +40,13 @@
 
 <script>
 export default {
-    name: "MenuItems"
+    name: "MenuItems",
+
+    methods: {
+        item_selected(event) {
+            event.target.classList.add("clicked");
+        }
+    }
 };
 </script>
 
@@ -49,5 +55,16 @@ export default {
     width: 50%;
     margin-left: 20px;
     margin-bottom: 30px;
+}
+
+.item {
+    transition: 0.4s;
+}
+
+.item:hover,
+.item:focus,
+.clicked {
+    color: var(--light);
+    background-color: var(--primary);
 }
 </style>

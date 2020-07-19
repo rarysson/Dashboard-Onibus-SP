@@ -10,7 +10,9 @@
         </b-col>
 
         <b-col v-if="bus_option == 0" cols="auto">
-            <b-button @click="search_all_buses">Pesquisar</b-button>
+            <b-button variant="primary" @click="search_all_buses">
+                Pesquisar
+            </b-button>
         </b-col>
 
         <line-search
@@ -29,6 +31,7 @@
 
             <b-col cols="auto" class="mb-20">
                 <b-button
+                    :variant="company_option === null ? 'secondary' : 'primary'"
                     :disabled="company_option === null"
                     @click="search_company_buses"
                 >

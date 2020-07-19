@@ -19,6 +19,11 @@
                         style="text-align: right;"
                     >
                         <b-button
+                            :variant="
+                                selected_busstop === null
+                                    ? 'secondary'
+                                    : 'primary'
+                            "
                             :disabled="selected_busstop === null"
                             @click="search_forecast"
                         >

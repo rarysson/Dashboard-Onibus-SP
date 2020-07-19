@@ -10,7 +10,9 @@
         </b-col>
 
         <b-col v-if="busstop_option == 0" cols="auto">
-            <b-button @click="search_all_bus_stop">Pesquisar</b-button>
+            <b-button variant="primary" @click="search_all_bus_stop">
+                Pesquisar
+            </b-button>
         </b-col>
 
         <b-col v-else-if="busstop_option == 1" class="mb-20" cols="12">
@@ -44,6 +46,9 @@
 
             <b-col cols="auto" class="mb-20">
                 <b-button
+                    :variant="
+                        bus_lane_option === null ? 'secondary' : 'primary'
+                    "
                     :disabled="bus_lane_option === null"
                     @click="
                         search_bus_stop(

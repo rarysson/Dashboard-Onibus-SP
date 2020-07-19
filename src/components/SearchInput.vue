@@ -10,7 +10,7 @@
             <template v-slot:append>
                 <slot name="append" />
 
-                <b-button type="submit">
+                <b-button variant="info" type="submit">
                     <b-icon-search />
                 </b-button>
             </template>

@@ -31,6 +31,7 @@
             </b-col>
             <b-col cols="auto">
                 <b-button
+                    :variant="line_index === null ? 'secondary' : 'info'"
                     :disabled="line_index === null"
                     @click="$emit('line-searched', lines[line_index])"
                 >

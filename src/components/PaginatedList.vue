@@ -23,16 +23,19 @@
                             :key="index"
                             class="data-list-item"
                         >
-                            <span
+                            <div
                                 v-for="(property, i) in properties"
                                 :key="i"
-                                class="data-title"
+                                class="data-div"
                             >
-                                <b>{{ property.title }}</b>
+                                <span class="data-title">
+                                    <b>{{ property.title }}</b>
+                                </span>
+
                                 <span class="data-info">
                                     {{ data[property.key] }}
                                 </span>
-                            </span>
+                            </div>
                         </b-list-group-item>
                     </b-list-group>
                 </b-col>
@@ -113,30 +116,32 @@ export default {
     display: flex;
     padding: 0;
     margin-bottom: 20px;
-    border: 1px solid black;
+    border: 1px solid var(--gray-dark);
     border-radius: 5px;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.3);
 }
 
-.data-list-item span {
+.data-div {
     flex: 1;
-    padding: 5px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.data-list-item span:not(:last-child) {
-    border-right: 1px solid black;
+.data-div:not(:last-child) {
+    border-right: 3px solid var(--gray-dark);
 }
 
-.data-list-item b {
+.data-list-item span {
     width: 100%;
     text-align: center;
-    border-bottom: 1px solid black;
+    padding: 5px 0;
 }
 
 .data-title {
     font-size: 1.1rem;
+    color: var(--white);
+    background-color: var(--dark);
 }
 
 .data-info {
