@@ -74,6 +74,8 @@
             :empty-option="empty_option"
             :properties="properties"
         />
+
+        <alert-box ref="alert" />
     </b-container>
 </template>
 
@@ -81,6 +83,7 @@
 import DropdownSelectMenu from "@/components/DropdownSelectMenu";
 import SearchInput from "@/components/SearchInput";
 import PaginatedList from "@/components/PaginatedList";
+import AlertBox from "@/components/AlertBox";
 import API from "@/util/api";
 
 export default {
@@ -90,7 +93,8 @@ export default {
     components: {
         DropdownSelectMenu,
         SearchInput,
-        PaginatedList
+        PaginatedList,
+        AlertBox
     },
 
     data() {
@@ -100,7 +104,6 @@ export default {
             operation_options: [],
             way_option: 0,
             operation_option: 0,
-            old_term: "",
             empty_option: {
                 title: "Nenhuma linha a ser mostrada",
                 subtitle: "Procure alguma linha na barrade pesquisa"
@@ -159,6 +162,10 @@ export default {
             }
 
             this.$refs.list.reset_data(this.filtered_lines);
+            this.$refs.alert.fire_message(
+                "Linhas filtradas com sucesso",
+                "success"
+            );
         },
 
         update_selected_way_filter(val) {
@@ -177,29 +184,38 @@ export default {
         },
 
         async search_term(term) {
-            if (term != this.old_term) {
-                try {
-                    const response = await API.get("Linha/Buscar", {
-                        params: { termosBusca: term }
-                    });
-                    const lines = response.data;
-                    this.lines = [];
+            try {
+                const response = await API.get("Linha/Buscar", {
+                    params: { termosBusca: term }
+                });
+                const lines = response.data;
+                this.lines = [];
 
-                    lines.forEach(line => {
-                        this.lines.push({
-                            number: `${line.lt}-${line.tl}`,
-                            name_1: line.tp,
-                            name_2: line.ts,
-                            way: this.get_line_way_text(line.sl)
-                        });
+                lines.forEach(line => {
+                    this.lines.push({
+                        number: `${line.lt}-${line.tl}`,
+                        name_1: line.tp,
+                        name_2: line.ts,
+                        way: this.get_line_way_text(line.sl)
                     });
+                });
 
-                    this.filtered_lines = this.lines;
-                    this.old_term = term;
-                    this.$refs.list.reset_data(this.filtered_lines);
-                } catch (error) {
-                    console.log(error);
+                this.filtered_lines = this.lines;
+                this.$refs.list.reset_data(this.filtered_lines);
+
+                if (this.lines.length === 0) {
+                    this.$refs.alert.fire_message(
+                        "Não existe linhas para sua busca",
+                        "warning"
+                    );
                 }
+            } catch (error) {
+                this.$refs.alert.fire_message(
+                    `Erro com o servidor
+                        erro: ${error}
+                        Tente pesquisar novamente ou recarregue a página`,
+                    "danger"
+                );
             }
         }
     }

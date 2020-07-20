@@ -39,12 +39,15 @@
                 </b-button>
             </b-col>
         </template>
+
+        <alert-box ref="alert" />
     </b-row>
 </template>
 
 <script>
 import DropdownSelectMenu from "@/components/DropdownSelectMenu";
 import LineSearch from "@/components/LineSearch";
+import AlertBox from "@/components/AlertBox";
 import API from "@/util/api";
 
 export default {
@@ -52,7 +55,8 @@ export default {
 
     components: {
         DropdownSelectMenu,
-        LineSearch
+        LineSearch,
+        AlertBox
     },
 
     data() {
@@ -91,7 +95,11 @@ export default {
                             }) === index
                     );
                 } catch (error) {
-                    console.log(error);
+                    this.$refs.alert.fire_message(
+                        `Falha ao procurar empresas
+                        erro: ${error}`,
+                        "danger"
+                    );
                 }
             }
         }
@@ -144,7 +152,11 @@ export default {
                         });
                     });
                 } catch (error) {
-                    console.log(error);
+                    this.$refs.alert.fire_message(
+                        `Erro com o servidor
+                        erro: ${error}`,
+                        "danger"
+                    );
                 }
             }
 
@@ -172,8 +184,19 @@ export default {
                 });
 
                 this.$emit("bus-searched", buses);
+
+                if (buses.length === 0) {
+                    this.$refs.alert.fire_message(
+                        "Não existe ônibus para sua busca",
+                        "warning"
+                    );
+                }
             } catch (error) {
-                console.log(error);
+                this.$refs.alert.fire_message(
+                    `Erro com o servidor
+                        erro: ${error}`,
+                    "danger"
+                );
             }
 
             this.$emit("data-searched");
@@ -204,7 +227,11 @@ export default {
 
                 this.$emit("bus-searched", buses);
             } catch (error) {
-                console.log(error);
+                this.$refs.alert.fire_message(
+                    `Erro com o servidor
+                        erro: ${error}`,
+                    "danger"
+                );
             }
 
             this.$emit("data-searched");

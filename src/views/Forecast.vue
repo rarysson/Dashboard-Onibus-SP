@@ -75,6 +75,8 @@
                 </b-overlay>
             </b-col>
         </b-row>
+
+        <alert-box ref="alert" />
     </b-container>
 </template>
 
@@ -86,6 +88,7 @@ import LMarkerCluster from "@/components/LMarkerCluster";
 import LMarker from "@/components/LMarker";
 import BusStopMapSearch from "@/components/BusStopMapSearch";
 import LineSearch from "@/components/LineSearch";
+import AlertBox from "@/components/AlertBox";
 import API from "@/util/api";
 
 export default {
@@ -97,7 +100,8 @@ export default {
         LMarkerCluster,
         LMarker,
         BusStopMapSearch,
-        LineSearch
+        LineSearch,
+        AlertBox
     },
 
     data() {
@@ -199,7 +203,11 @@ export default {
             try {
                 this.search_forecast();
             } catch (error) {
-                console.log(error);
+                this.$refs.alert.fire_message(
+                    `Erro com o servidor
+                    erro: ${error}`,
+                    "danger"
+                );
             }
         },
 
@@ -209,7 +217,7 @@ export default {
                 const response = await API.get("Previsao/Parada", {
                     params: { codigoParada: this.selected_busstop.id }
                 });
-                const lines = response.data.p.l;
+                const lines = response.data.p === null ? [] : response.data.p.l;
                 const data = [];
 
                 lines.forEach(line => {
@@ -257,8 +265,10 @@ export default {
         },
 
         async search_forecast() {
+            // eslint-disable-next-line no-useless-catch
             try {
                 this.hide_markers_on_map("cluster");
+                const old_forecast = this.forecasts;
 
                 if (this.selected_busstop !== null) {
                     this.bus_stop = await this.search_busstop_forecast();
@@ -276,9 +286,25 @@ export default {
                     this.selected_line = null;
                 }
 
-                this.$refs.cluster_bus.set_markers_data(this.forecasts);
+                if (old_forecast.length === 0) {
+                    this.$refs.cluster_bus.set_markers_data(this.forecasts);
+                } else {
+                    this.$refs.cluster_bus.reset_markers_data(this.forecasts);
+                }
+
+                if (this.forecasts.length === 0) {
+                    this.$refs.alert.fire_message(
+                        "Não existe previsões para sua busca",
+                        "warning"
+                    );
+                } else {
+                    this.$refs.alert.fire_message(
+                        "Previsão realizada com sucesso",
+                        "success"
+                    );
+                }
             } catch (error) {
-                console.log(error);
+                throw error;
             }
         }
     }

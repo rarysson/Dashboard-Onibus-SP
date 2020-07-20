@@ -33,11 +33,17 @@ export default {
 
     methods: {
         set_marker_data(data, map_object) {
-            this.marker = L.marker(L.latLng(data.py, data.px), {
-                icon: this.markerIcon
-            }).bindPopup(data.text);
+            if (this.marker === null) {
+                this.marker = L.marker(L.latLng(data.py, data.px), {
+                    icon: this.markerIcon
+                }).bindPopup(data.text);
 
-            this.marker.addTo(map_object);
+                this.marker.addTo(map_object);
+            } else {
+                this.marker.setLatLng(L.latLng(data.py, data.px));
+                this.marker.setPopupContent(data.text);
+                this.marker.addTo(map_object);
+            }
         }
     }
 };

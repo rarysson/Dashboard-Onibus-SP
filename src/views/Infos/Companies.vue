@@ -13,18 +13,28 @@
             :empty-option="empty_option"
             :properties="properties"
         />
+
+        <b-row v-else align-h="center">
+            <b-col cols="auto">
+                <b-spinner variant="primary" />
+            </b-col>
+        </b-row>
+
+        <alert-box ref="alert" />
     </b-container>
 </template>
 
 <script>
 import PaginatedList from "@/components/PaginatedList";
+import AlertBox from "@/components/AlertBox";
 import API from "@/util/api";
 
 export default {
     name: "CompaniesPage",
 
     components: {
-        PaginatedList
+        PaginatedList,
+        AlertBox
     },
 
     data() {
@@ -64,7 +74,11 @@ export default {
                         }) === index
                 );
             } catch (error) {
-                console.log(error);
+                this.$refs.alert.fire_message(
+                    `Erro com o servidor
+                        erro: ${error}`,
+                    "danger"
+                );
             }
         }
     }

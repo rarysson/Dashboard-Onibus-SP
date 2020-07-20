@@ -199,6 +199,13 @@ export default {
                 });
 
                 this.$emit("bus-stop-searched", bus_stop);
+
+                if (bus_stop.length === 0) {
+                    this.$refs.alert.fire_message(
+                        "Não existe paradas para sua busca",
+                        "warning"
+                    );
+                }
             } catch (error) {
                 this.$refs.alert.fire_message(
                     `Erro com servidor
