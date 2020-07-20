@@ -6,6 +6,14 @@ Projeto desenvolvido para a seleção de estágio da Aiko.
 
 O teste escolhido foi o desafio para desenvolvedor front-end.
 
+Para saber mais do projeto acesse a pasta: [doc](doc).
+
+## Vídeo de demonstração da aplicação
+
+Uma demonstração da aplicação pode ser vista neste link do YouTube: https://youtu.be/ImmrOIsH1A4
+
+Onde é mostrado como funciona a aplicação e algumas decisões tomadas no desenvolvimento.
+
 ## Tecnologias usadas
 
 -   Vue

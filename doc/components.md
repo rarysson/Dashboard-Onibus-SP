@@ -1,6 +1,6 @@
 # Componentes da aplicação
 
-Componentes são pequenas partes que contém funcionalidades que podem ser reaproveitadas nas páginas.
+Componentes são pequenas partes que contém funcionalidades que podem ser reaproveitadas nas páginas. Onde eles estão na pasta [components](../src/components).
 
 Abaixo segue uma explicação do que faz e seus props e eventos (props são as possíveis propriedades que o componente pode receber).
 

@@ -33,7 +33,7 @@
 
         <b-list-group-item class="item" to="/forecast">
             <b-icon-clock />
-            Previsão de chegada numa parada
+            Previsão de chegada dos ônibus
         </b-list-group-item>
     </b-list-group>
 </template>

@@ -1,6 +1,6 @@
 # Páginas da aplicação
 
-Páginas são as rotas visíveis ao usuário, onde elas estão na pasta views.
+Páginas são as rotas visíveis ao usuário, onde elas estão na pasta [views](../src/views).
 
 Abaixo segue uma breve explicação do que faz e os seus componentes.
 
