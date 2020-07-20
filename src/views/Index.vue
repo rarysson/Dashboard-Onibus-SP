@@ -4,11 +4,13 @@
             <menu-items />
         </div>
 
-        <!-- TODO: Implementar quando deixar o design responsivo
-        <b-button v-b-toggle.sidebar variant="primary" size="lg">
-            <b-icon-list />
-            Menu
-        </b-button>
+        <div class="div-menu border-bottom">
+            <b-img src="../assets/logos/logo_min.png" width="50%" />
+            <b-button v-b-toggle.sidebar variant="primary" squared>
+                <b-icon-list />
+                Menu
+            </b-button>
+        </div>
 
         <b-sidebar id="sidebar" backdrop no-header-close>
             <menu-items />
@@ -18,7 +20,7 @@
                     Fechar menu
                 </b-button>
             </template>
-        </b-sidebar> -->
+        </b-sidebar>
 
         <router-view class="views-container" />
     </div>
@@ -50,7 +52,27 @@ export default {
 
 .views-container {
     flex: 1;
-    padding: 2.5vw 1vw 0.5vw;
+    padding: 2.5vw 1.5vw 3vw;
     min-height: 100%;
+}
+
+.div-menu {
+    display: none;
+    background-color: var(--light);
+}
+
+@media (max-width: 1150px) {
+    .app-container {
+        flex-direction: column;
+    }
+
+    .sidebar-container {
+        display: none;
+    }
+
+    .div-menu {
+        display: flex;
+        justify-content: space-between;
+    }
 }
 </style>

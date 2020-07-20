@@ -2,7 +2,7 @@
     <b-row>
         <b-col cols="12">
             <b-row align-h="between">
-                <b-col>
+                <b-col class="col-filter">
                     <b-form-checkbox
                         v-model="filter_result"
                         size="lg"
@@ -12,10 +12,10 @@
                     </b-form-checkbox>
                 </b-col>
 
-                <b-col v-if="filter_result" cols="auto">
+                <b-col v-if="filter_result" cols="auto" class="mb-20">
                     <b-button
                         size="sm"
-                        class="mr-20"
+                        class="mr-20 mb-20"
                         :variant="user_point === null ? 'secondary' : 'info'"
                         :disabled="user_point === null"
                         @click="toggle_user_marker"
@@ -30,7 +30,7 @@
                     <b-button
                         variant="primary"
                         size="sm"
-                        class="mr-20"
+                        class="mr-20 mb-20"
                         @click="find_me"
                     >
                         <b-icon-geo-alt />
@@ -39,6 +39,7 @@
 
                     <b-button
                         size="sm"
+                        class="mb-20"
                         :variant="choosing_point ? 'info' : 'primary'"
                         :pressed.sync="choosing_point"
                     >
@@ -220,3 +221,11 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+@media (max-width: 850px) {
+    .col-filter {
+        flex-basis: 100%;
+    }
+}
+</style>

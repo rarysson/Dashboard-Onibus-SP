@@ -17,6 +17,7 @@
 
         <b-col v-else-if="busstop_option == 1" class="mb-20" cols="12">
             <search-input
+                class="street-name-search"
                 placeholder="Digite o nome da rua ou parada..."
                 @submit="
                     search_bus_stop('Parada/Buscar', 'termosBusca', $event)
@@ -36,7 +37,7 @@
         />
 
         <template v-else-if="busstop_option == 3">
-            <b-col class="col-fill mb-20">
+            <b-col class="col-fill mb-20 bus-lane-menu">
                 <dropdown-select-menu
                     title="Selecionar o corredor"
                     :options="get_bus_lanes_options()"
@@ -219,3 +220,19 @@ export default {
     }
 };
 </script>
+
+<style>
+.street-name-search .group {
+    flex-direction: row;
+}
+
+.street-name-search .input {
+    width: auto;
+}
+
+@media (max-width: 700px) {
+    .bus-lane-menu {
+        min-width: 70%;
+    }
+}
+</style>

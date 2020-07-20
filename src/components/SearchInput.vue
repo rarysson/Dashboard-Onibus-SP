@@ -1,11 +1,16 @@
 <template>
     <b-form @submit.prevent="submit">
-        <b-input-group>
+        <b-input-group class="group">
             <template v-slot:prepend>
                 <slot name="prepend" />
             </template>
 
-            <b-form-input :placeholder="placeholder" required v-model="term" />
+            <b-form-input
+                :placeholder="placeholder"
+                class="input"
+                required
+                v-model="term"
+            />
 
             <template v-slot:append>
                 <slot name="append" />
@@ -42,3 +47,16 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+@media (max-width: 600px) {
+    .group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .input {
+        width: 100%;
+    }
+}
+</style>

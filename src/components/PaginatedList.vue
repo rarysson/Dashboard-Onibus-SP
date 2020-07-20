@@ -1,5 +1,5 @@
 <template>
-    <b-row>
+    <b-row class="paginated-list-container">
         <b-col>
             <b-row class="data-row">
                 <b-col cols="12">
@@ -39,17 +39,19 @@
                         </b-list-group-item>
                     </b-list-group>
                 </b-col>
-            </b-row>
 
-            <b-row v-if="all_data.length !== 0">
                 <b-col>
-                    <b-pagination
-                        align="right"
-                        v-model="current_page"
-                        :total-rows="total_rows"
-                        :per-page="per_page"
-                        @change="page_changed"
-                    />
+                    <b-row v-if="all_data.length !== 0">
+                        <b-col>
+                            <b-pagination
+                                align="right"
+                                v-model="current_page"
+                                :total-rows="total_rows"
+                                :per-page="per_page"
+                                @change="page_changed"
+                            />
+                        </b-col>
+                    </b-row>
                 </b-col>
             </b-row>
         </b-col>
@@ -116,6 +118,10 @@ export default {
 </script>
 
 <style scoped>
+.paginated-list-container {
+    margin-top: -30px;
+}
+
 .data-row {
     height: 70vh;
     margin-top: 50px;
@@ -155,5 +161,18 @@ export default {
 
 .data-info {
     font-size: 0.9rem;
+}
+
+@media (max-width: 700px) {
+    .data-list-item {
+        flex-wrap: wrap;
+    }
+
+    .data-div {
+        flex-basis: 100%;
+        flex-direction: row;
+        border-right: 3px solid var(--gray-dark);
+        border-bottom: 2px solid var(--gray-dark);
+    }
 }
 </style>

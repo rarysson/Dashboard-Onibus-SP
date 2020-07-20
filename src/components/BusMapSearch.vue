@@ -21,7 +21,7 @@
         />
 
         <template v-else-if="bus_option == 2">
-            <b-col class="col-fill mb-20">
+            <b-col class="col-fill mb-20 company-menu">
                 <dropdown-select-menu
                     title="Selecionar a empresa"
                     :options="get_companies_options()"
@@ -239,3 +239,11 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+@media (max-width: 700px) {
+    .company-menu {
+        min-width: 70%;
+    }
+}
+</style>

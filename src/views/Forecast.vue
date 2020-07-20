@@ -17,6 +17,7 @@
                     <b-col
                         v-if="forecast_option == 0"
                         style="text-align: right;"
+                        class="col-search-forecast"
                     >
                         <b-button
                             :variant="
@@ -35,10 +36,28 @@
 
             <b-col v-if="forecast_option == 0">
                 <bus-stop-map-search
+                    class="mb-20"
                     @searching-data="toggle_overlay"
                     @data-searched="toggle_overlay"
                     @bus-stop-searched="set_bus_stop_data"
                 />
+
+                <b-row>
+                    <b-col class="col-search-forecast-mobile">
+                        <b-button
+                            block
+                            :variant="
+                                selected_busstop === null
+                                    ? 'secondary'
+                                    : 'primary'
+                            "
+                            :disabled="selected_busstop === null"
+                            @click="search_forecast"
+                        >
+                            Pesquisar Previsão
+                        </b-button>
+                    </b-col>
+                </b-row>
             </b-col>
 
             <line-search
@@ -314,5 +333,19 @@ export default {
 <style scoped>
 .hide-map {
     z-index: -1;
+}
+
+.col-search-forecast-mobile {
+    display: none;
+}
+
+@media (max-width: 550px) {
+    .col-search-forecast-mobile {
+        display: unset;
+    }
+
+    .col-search-forecast {
+        display: none;
+    }
 }
 </style>

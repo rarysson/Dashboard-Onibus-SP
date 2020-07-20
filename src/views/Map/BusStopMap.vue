@@ -1,6 +1,7 @@
 <template>
     <b-container fluid>
         <bus-stop-map-search
+            class="mb-20"
             @searching-data="toggle_overlay"
             @data-searched="toggle_overlay"
             @bus-stop-searched="set_bus_stop_data"

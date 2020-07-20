@@ -3,6 +3,7 @@
         <b-row align-h="between">
             <b-col cols="auto">
                 <search-input
+                    class="line-search mb-20"
                     placeholder="Digite o termo de busca..."
                     @submit="search_term"
                 >
@@ -41,6 +42,7 @@
                     <b-col cols="auto" class="mr-20">
                         <dropdown-select-menu
                             title="Filtrar linhas pelo sentido"
+                            class="mb-20"
                             :options="[
                                 { value: 0, text: 'Mostrar em ambos sentidos' },
                                 {
@@ -59,6 +61,7 @@
                     <b-col cols="auto">
                         <dropdown-select-menu
                             title="Filtrar linhas pelo modo de operação"
+                            class="mb-20"
                             empty-option="Pesquise alguma linha na barra de pesquisa"
                             :options="get_operation_options()"
                             @change="update_selected_operation_filter"
@@ -221,3 +224,13 @@ export default {
     }
 };
 </script>
+
+<style>
+.line-search .group {
+    flex-direction: row;
+}
+
+.line-search .input {
+    width: auto;
+}
+</style>
