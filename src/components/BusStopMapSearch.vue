@@ -62,6 +62,8 @@
                 </b-button>
             </b-col>
         </template>
+
+        <alert-box ref="alert" />
     </b-row>
 </template>
 
@@ -69,6 +71,7 @@
 import DropdownSelectMenu from "@/components/DropdownSelectMenu";
 import SearchInput from "@/components/SearchInput";
 import LineSearch from "@/components/LineSearch";
+import AlertBox from "@/components/AlertBox";
 import API from "@/util/api";
 
 export default {
@@ -77,7 +80,8 @@ export default {
     components: {
         DropdownSelectMenu,
         SearchInput,
-        LineSearch
+        LineSearch,
+        AlertBox
     },
 
     data() {
@@ -107,7 +111,11 @@ export default {
                         });
                     });
                 } catch (error) {
-                    console.log(error);
+                    this.$refs.alert.fire_message(
+                        `Erro ao pesquisar corredores
+                        erro: ${error}`,
+                        "danger"
+                    );
                 }
             }
         }
@@ -158,7 +166,11 @@ export default {
                         });
                     });
                 } catch (error) {
-                    console.log(error);
+                    this.$refs.alert.fire_message(
+                        `Erro com servidor
+                        erro: ${error}`,
+                        "danger"
+                    );
                 }
             }
 
@@ -188,7 +200,11 @@ export default {
 
                 this.$emit("bus-stop-searched", bus_stop);
             } catch (error) {
-                console.log(error);
+                this.$refs.alert.fire_message(
+                    `Erro com servidor
+                        erro: ${error}`,
+                    "danger"
+                );
             }
 
             this.$emit("data-searched");

@@ -44,6 +44,8 @@
             @get-map-object="set_child_map($refs.distance_filter)"
             @data-filtered="filter_data"
         />
+
+        <alert-box ref="alert" />
     </b-container>
 </template>
 
@@ -54,6 +56,7 @@ import LMap from "@/components/LMap";
 import LMarkerCluster from "@/components/LMarkerCluster";
 import BusStopMapSearch from "@/components/BusStopMapSearch";
 import DistanceFilter from "@/components/DistanceFilter";
+import AlertBox from "@/components/AlertBox";
 
 export default {
     name: "BusStopMapPage",
@@ -63,7 +66,8 @@ export default {
         LMap,
         LMarkerCluster,
         BusStopMapSearch,
-        DistanceFilter
+        DistanceFilter,
+        AlertBox
     },
 
     data() {
@@ -140,6 +144,10 @@ export default {
         filter_data(data) {
             this.hide_markers_on_map();
             this.$refs.cluster.reset_markers_data(data);
+            this.$refs.alert.fire_message(
+                "Paradas filtradas com sucesso",
+                "success"
+            );
         }
     }
 };

@@ -39,12 +39,15 @@
                 </b-button>
             </b-col>
         </b-row>
+
+        <alert-box ref="alert" />
     </b-col>
 </template>
 
 <script>
 import DropdownSelectMenu from "@/components/DropdownSelectMenu";
 import SearchInput from "@/components/SearchInput";
+import AlertBox from "@/components/AlertBox";
 import API from "@/util/api";
 
 export default {
@@ -52,7 +55,8 @@ export default {
 
     components: {
         SearchInput,
-        DropdownSelectMenu
+        DropdownSelectMenu,
+        AlertBox
     },
 
     data() {
@@ -96,8 +100,16 @@ export default {
                 });
 
                 this.lines = lines;
+                this.$refs.alert.fire_message(
+                    "Linha achada com sucesso",
+                    "success"
+                );
             } catch (error) {
-                console.log(error);
+                this.$refs.alert.fire_message(
+                    `Erro ao procurar linha
+                    erro: ${error}`,
+                    "danger"
+                );
             }
         }
     }
