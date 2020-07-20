@@ -93,6 +93,15 @@
                     </l-map>
                 </b-overlay>
             </b-col>
+
+            <b-col>
+                <time-filter
+                    ref="time_filter"
+                    :raw-data="forecasts"
+                    @get-map-object="set_child_map($refs.time_filter)"
+                    @data-filtered="filter_data"
+                />
+            </b-col>
         </b-row>
 
         <alert-box ref="alert" />
@@ -108,6 +117,7 @@ import LMarker from "@/components/LMarker";
 import BusStopMapSearch from "@/components/BusStopMapSearch";
 import LineSearch from "@/components/LineSearch";
 import AlertBox from "@/components/AlertBox";
+import TimeFilter from "@/components/TimeFilter";
 import API from "@/util/api";
 
 export default {
@@ -120,7 +130,8 @@ export default {
         LMarker,
         BusStopMapSearch,
         LineSearch,
-        AlertBox
+        AlertBox,
+        TimeFilter
     },
 
     data() {
@@ -165,6 +176,10 @@ export default {
     },
 
     methods: {
+        set_child_map(child) {
+            child.set_map_object(this.map);
+        },
+
         get_line_way(way) {
             return way === 1 ? "Principal" : "Secundário";
         },
@@ -210,6 +225,15 @@ export default {
             }
         },
 
+        filter_data(data) {
+            this.hide_markers_on_map("cluster_bus");
+            this.$refs.cluster_bus.reset_markers_data(data);
+            this.$refs.alert.fire_message(
+                "ônibus filtrados com sucesso",
+                "success"
+            );
+        },
+
         async set_lines_data(data) {
             if (this.forecasts.length !== 0) {
                 this.hide_markers_on_map("cluster");
@@ -223,8 +247,8 @@ export default {
                 this.search_forecast();
             } catch (error) {
                 this.$refs.alert.fire_message(
-                    `Erro com o servidor
-                    erro: ${error}`,
+                    `Erro com o servidor <br>
+                    erro: ${error.response.code}`,
                     "danger"
                 );
             }
@@ -244,6 +268,7 @@ export default {
                         data.push({
                             px: bus.px,
                             py: bus.py,
+                            time: bus.t,
                             text: `<b>Horário de previsão:</b> ${bus.t} <br>
                             <b>Origem:</b> ${line.lt1} <br>
                             <b>Destino:</b> ${line.lt0} <br>
@@ -272,6 +297,7 @@ export default {
                         data.push({
                             px: bus.px,
                             py: bus.py,
+                            time: bus.t,
                             text: `<b>Horário de previsão:</b> ${bus.t}`
                         });
                     });
