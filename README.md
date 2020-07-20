@@ -26,9 +26,16 @@ Onde é mostrado como funciona a aplicação e algumas decisões tomadas no dese
 
 Para usar online acesse o link: https://dashboard-sp-trans.herokuapp.com/
 
-Para usar localmente, clone o repositório, vá na pasta criada e execute os comandos:
+Para usar localmente, clone o repositório, vá na pasta criada e crie um arquivo chamado `.env.local`, dentro desse arquivo coloque o seguinte valor (sem os parênteses):
+```
+VUE_APP_TOKEN=(SUA CHAVE DE ACESSO DA API OLHO VIVO)
+```
+
+e após isso, execute os comandos:
 
 ```
 npm install
 npm run serve
 ```
+
+*Para conseguir uma chave de acesso da API olhe o arquivo [api.md](doc/api.md)*
