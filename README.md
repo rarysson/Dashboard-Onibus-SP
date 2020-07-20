@@ -10,7 +10,7 @@ Para saber mais do projeto acesse a pasta: [doc](doc).
 
 ## Vídeo de demonstração da aplicação
 
-Uma demonstração da aplicação pode ser vista neste link do YouTube: https://youtu.be/ImmrOIsH1A4
+Uma demonstração da aplicação pode ser vista neste link do YouTube: https://youtu.be/-NuTyKNUtkY
 
 Onde é mostrado como funciona a aplicação e algumas decisões tomadas no desenvolvimento.
 
