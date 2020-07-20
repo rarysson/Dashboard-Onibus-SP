@@ -78,12 +78,15 @@
                 </b-col>
             </b-row>
         </b-col>
+
+        <alert-box ref="alert" />
     </b-row>
 </template>
 
 <script>
 import L from "leaflet";
 import EyeIconMsg from "@/components/EyeIconMsg";
+import AlertBox from "@/components/AlertBox";
 import contains_point_on_circle from "@/util/contains";
 
 export default {
@@ -99,7 +102,8 @@ export default {
     },
 
     components: {
-        EyeIconMsg
+        EyeIconMsg,
+        AlertBox
     },
 
     data() {
@@ -157,7 +161,7 @@ export default {
             this.map.on("locationfound", this.set_user_marker);
 
             this.map.on("locationerror", e => {
-                console.log(e);
+                this.$refs.alert.fire_message(`Erro: ${e.message}`, "danger");
             });
         },
 

@@ -12,14 +12,8 @@
             </b-button>
         </div>
 
-        <b-sidebar id="sidebar" backdrop no-header-close>
+        <b-sidebar id="sidebar" backdrop>
             <menu-items />
-
-            <template v-slot:footer="{ hide }">
-                <b-button @click="hide" variant="info" block squared size="lg">
-                    Fechar menu
-                </b-button>
-            </template>
         </b-sidebar>
 
         <router-view class="views-container" />

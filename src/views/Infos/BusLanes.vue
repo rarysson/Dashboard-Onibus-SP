@@ -66,8 +66,8 @@ export default {
                 });
             } catch (error) {
                 this.$refs.alert.fire_message(
-                    `Erro com o servidor
-                        erro: ${error}`,
+                    `Erro com o servidor <br>
+                    erro: ${error.response.code}`,
                     "danger"
                 );
             }

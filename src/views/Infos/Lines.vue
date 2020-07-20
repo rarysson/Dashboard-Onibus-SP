@@ -214,9 +214,8 @@ export default {
                 }
             } catch (error) {
                 this.$refs.alert.fire_message(
-                    `Erro com o servidor
-                        erro: ${error}
-                        Tente pesquisar novamente ou recarregue a página`,
+                    `Erro com o servidor <br>
+                    erro: ${error.response.code}`,
                     "danger"
                 );
             }

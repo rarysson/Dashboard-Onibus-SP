@@ -113,8 +113,8 @@ export default {
                     });
                 } catch (error) {
                     this.$refs.alert.fire_message(
-                        `Erro ao pesquisar corredores
-                        erro: ${error}`,
+                        `Erro com o servidor <br>
+                        erro: ${error.response.code}`,
                         "danger"
                     );
                 }
@@ -168,8 +168,8 @@ export default {
                     });
                 } catch (error) {
                     this.$refs.alert.fire_message(
-                        `Erro com servidor
-                        erro: ${error}`,
+                        `Erro com o servidor <br>
+                        erro: ${error.response.code}`,
                         "danger"
                     );
                 }
@@ -209,8 +209,8 @@ export default {
                 }
             } catch (error) {
                 this.$refs.alert.fire_message(
-                    `Erro com servidor
-                        erro: ${error}`,
+                    `Erro com o servidor <br>
+                    erro: ${error.response.code}`,
                     "danger"
                 );
             }

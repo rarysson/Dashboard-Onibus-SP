@@ -106,8 +106,8 @@ export default {
                 );
             } catch (error) {
                 this.$refs.alert.fire_message(
-                    `Erro ao procurar linha
-                    erro: ${error}`,
+                    `Erro ao procurar linha <br>
+                    erro: ${error.response.code}`,
                     "danger"
                 );
             }
