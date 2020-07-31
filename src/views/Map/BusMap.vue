@@ -46,6 +46,8 @@
             @data-filtered="filter_data"
         />
 
+        <icon8-credits />
+
         <alert-box ref="alert" />
     </b-container>
 </template>
@@ -58,6 +60,7 @@ import LMarkerCluster from "@/components/LMarkerCluster";
 import BusMapSearch from "@/components/BusMapSearch";
 import DistanceFilter from "@/components/DistanceFilter";
 import AlertBox from "@/components/AlertBox";
+import Icon8Credits from "@/components/Icon8Credits";
 
 export default {
     name: "BusMapPage",
@@ -68,7 +71,8 @@ export default {
         LMarkerCluster,
         BusMapSearch,
         DistanceFilter,
-        AlertBox
+        AlertBox,
+        Icon8Credits
     },
 
     data() {

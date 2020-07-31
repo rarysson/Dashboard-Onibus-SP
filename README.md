@@ -1,32 +1,25 @@
-# Programa de estágio - 2020-1
+# Dashboard Ônibus SP
 
-![Aiko](doc/imagens/aiko.png)
+Dashboard sobre os ônibus de São Paulo, onde é mostrado a localização e informações dos ônibus e as paradas de ônibus. Também é mostrado as informações sobre as linhas, corredores, empresas e a previsão de chegada de ônibus num local escolhido.
 
-Projeto desenvolvido para a seleção de estágio da Aiko.
-
-O teste escolhido foi o desafio para desenvolvedor front-end.
+Projeto desenvolvido durante a seleção de estágio da Aiko.
 
 Para saber mais do projeto acesse a pasta: [doc](doc).
 
-## Vídeo de demonstração da aplicação
-
-Uma demonstração da aplicação pode ser vista neste link do YouTube: https://youtu.be/-NuTyKNUtkY
-
-Onde é mostrado como funciona a aplicação e algumas decisões tomadas no desenvolvimento.
-
 ## Tecnologias usadas
 
--   Vue
--   BootstrapVue
--   Axios
--   OpenStreetMap
--   Leaflet com MarkerCluster
+-   [Vue](https://vuejs.org/)
+-   [BootstrapVue](https://bootstrap-vue.org/)
+-   [Axios](https://github.com/axios/axios)
+-   [OpenStreetMap](https://www.openstreetmap.org/copyright)
+-   [Leaflet](https://leafletjs.com/) com [MarkerCluster](https://github.com/Leaflet/Leaflet.markercluster)
 
 ## Rodando a aplicação
 
 Para usar online acesse o link: https://dashboard-sp-trans.herokuapp.com/
 
 Para usar localmente, clone o repositório, vá na pasta criada e crie um arquivo chamado `.env.local`, dentro desse arquivo coloque o seguinte valor (sem os parênteses):
+
 ```
 VUE_APP_TOKEN=(SUA CHAVE DE ACESSO DA API OLHO VIVO)
 ```
@@ -38,4 +31,4 @@ npm install
 npm run serve
 ```
 
-*Para conseguir uma chave de acesso da API olhe o arquivo [api.md](doc/api.md)*
+_Para conseguir uma chave de acesso da API olhe o arquivo [api.md](doc/api.md)_

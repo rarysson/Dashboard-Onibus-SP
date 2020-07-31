@@ -104,6 +104,8 @@
             </b-col>
         </b-row>
 
+        <icon8-credits />
+
         <alert-box ref="alert" />
     </b-container>
 </template>
@@ -118,6 +120,7 @@ import BusStopMapSearch from "@/components/BusStopMapSearch";
 import LineSearch from "@/components/LineSearch";
 import AlertBox from "@/components/AlertBox";
 import TimeFilter from "@/components/TimeFilter";
+import Icon8Credits from "@/components/Icon8Credits";
 import API from "@/util/api";
 
 export default {
@@ -131,7 +134,8 @@ export default {
         BusStopMapSearch,
         LineSearch,
         AlertBox,
-        TimeFilter
+        TimeFilter,
+        Icon8Credits
     },
 
     data() {

@@ -34,6 +34,7 @@ Página para mostrar a previsão de chegada dos ônibus para uma parada ou linha
     -   LineSearch
     -   AlertBox
     -   TimeFilter
+    -   Icon8Credits
 
 ## BusMap
 
@@ -48,6 +49,7 @@ Página para mostrar a posição dos ônibus no mapa
     -   BusMapSearch
     -   DistanceFilter
     -   AlertBox
+    -   Icon8Credits
 
 ## BusStopMap
 
@@ -62,6 +64,7 @@ Página para mostrar a posição das paradas de ônibus no mapa
     -   BusStopMapSearch
     -   DistanceFilter
     -   AlertBox
+    -   Icon8Credits
 
 ## BusLanes
 

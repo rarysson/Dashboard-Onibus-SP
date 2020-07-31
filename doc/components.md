@@ -107,6 +107,10 @@ Um wrapper para caso queira informar mensagens diferentes dependendo do valor ve
         -   Tipo: String
         -   **Obrigatório**
 
+## Icon8Credits
+
+Texto de crédito aos ícones usados do Icons8
+
 ## LineSearch
 
 Consiste em gerenciar a busca por uma linha
