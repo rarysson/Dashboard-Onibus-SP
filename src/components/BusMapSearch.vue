@@ -96,8 +96,7 @@ export default {
                     );
                 } catch (error) {
                     this.$refs.alert.fire_message(
-                        `Falha ao procurar empresas <br>
-                        erro: ${error.response.code}`,
+                        "Falha ao procurar empresas",
                         "danger"
                     );
                 }
@@ -153,8 +152,7 @@ export default {
                     });
                 } catch (error) {
                     this.$refs.alert.fire_message(
-                        `Erro com o servidor <br>
-                        erro: ${error.response.code}`,
+                        "Erro com o servidor",
                         "danger"
                     );
                 }
@@ -192,11 +190,7 @@ export default {
                     );
                 }
             } catch (error) {
-                this.$refs.alert.fire_message(
-                    `Erro com o servidor <br>
-                    erro: ${error.response.code}`,
-                    "danger"
-                );
+                this.$refs.alert.fire_message("Erro com o servidor", "danger");
             }
 
             this.$emit("data-searched");
@@ -227,11 +221,7 @@ export default {
 
                 this.$emit("bus-searched", buses);
             } catch (error) {
-                this.$refs.alert.fire_message(
-                    `Erro com o servidor <br>
-                    erro: ${error.response.code}`,
-                    "danger"
-                );
+                this.$refs.alert.fire_message("Erro com o servidor", "danger");
             }
 
             this.$emit("data-searched");

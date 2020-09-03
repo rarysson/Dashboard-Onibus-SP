@@ -1,5 +1,5 @@
 <template>
-    <b-row>
+    <b-row class="credits">
         <b-col cols="12">
             <p>
                 <a
@@ -48,6 +48,10 @@ export default {
 </script>
 
 <style scoped>
+.credits {
+    margin-top: 30px;
+}
+
 p {
     text-align: right;
     font-size: 0.6rem;

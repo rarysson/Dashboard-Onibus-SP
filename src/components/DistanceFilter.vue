@@ -160,8 +160,11 @@ export default {
 
             this.map.on("locationfound", this.set_user_marker);
 
-            this.map.on("locationerror", e => {
-                this.$refs.alert.fire_message(`Erro: ${e.message}`, "danger");
+            this.map.on("locationerror", () => {
+                this.$refs.alert.fire_message(
+                    "Erro: Detecção de localização negada",
+                    "danger"
+                );
             });
         },
 

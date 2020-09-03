@@ -1,5 +1,5 @@
 <template>
-    <b-list-group ref="group">
+    <b-list-group ref="group" @click="item_clicked">
         <b-img
             src="../assets/logos/logo.png"
             alt="logo sp trans"
@@ -42,12 +42,14 @@
 export default {
     name: "MenuItems",
 
-    mounted() {
-        this.$refs.group.children.forEach(child => {
-            if (child.pathname === this.$route.path) {
-                child.classList.add("clicked");
-            }
-        });
+    methods: {
+        item_clicked() {
+            this.$refs.group.children.forEach(child => {
+                if (child.pathname === this.$route.path) {
+                    child.classList.add("clicked");
+                }
+            });
+        }
     }
 };
 </script>

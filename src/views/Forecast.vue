@@ -250,11 +250,7 @@ export default {
             try {
                 this.search_forecast();
             } catch (error) {
-                this.$refs.alert.fire_message(
-                    `Erro com o servidor <br>
-                    erro: ${error.response.code}`,
-                    "danger"
-                );
+                this.$refs.alert.fire_message("Erro com o servidor", "danger");
             }
         },
 

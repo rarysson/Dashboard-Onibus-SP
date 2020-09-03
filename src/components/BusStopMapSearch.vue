@@ -113,8 +113,7 @@ export default {
                     });
                 } catch (error) {
                     this.$refs.alert.fire_message(
-                        `Erro com o servidor <br>
-                        erro: ${error.response.code}`,
+                        "Erro com o servidor",
                         "danger"
                     );
                 }
@@ -168,8 +167,7 @@ export default {
                     });
                 } catch (error) {
                     this.$refs.alert.fire_message(
-                        `Erro com o servidor <br>
-                        erro: ${error.response.code}`,
+                        "Erro com o servidor",
                         "danger"
                     );
                 }
@@ -208,11 +206,7 @@ export default {
                     );
                 }
             } catch (error) {
-                this.$refs.alert.fire_message(
-                    `Erro com o servidor <br>
-                    erro: ${error.response.code}`,
-                    "danger"
-                );
+                this.$refs.alert.fire_message("Erro com o servidor", "danger");
             }
 
             this.$emit("data-searched");

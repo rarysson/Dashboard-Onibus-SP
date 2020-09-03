@@ -105,11 +105,7 @@ export default {
                     "success"
                 );
             } catch (error) {
-                this.$refs.alert.fire_message(
-                    `Erro ao procurar linha <br>
-                    erro: ${error.response.code}`,
-                    "danger"
-                );
+                this.$refs.alert.fire_message("Erro com o servidor", "danger");
             }
         }
     }
