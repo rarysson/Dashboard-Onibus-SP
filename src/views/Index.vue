@@ -1,7 +1,9 @@
 <template>
     <div class="app-container">
         <div class="sidebar-container border-right">
-            <menu-items />
+            <hide-at breakpoint="medium" :breakpoints="{ medium: 1150 }">
+                <menu-items />
+            </hide-at>
         </div>
 
         <div class="div-menu border-bottom">
@@ -13,7 +15,9 @@
         </div>
 
         <b-sidebar id="sidebar" backdrop>
-            <menu-items />
+            <show-at breakpoint="medium" :breakpoints="{ medium: 1150 }">
+                <menu-items />
+            </show-at>
         </b-sidebar>
 
         <router-view class="views-container" />
@@ -22,12 +26,15 @@
 
 <script>
 import MenuItems from "@/components/MenuItems";
+import { showAt, hideAt } from "vue-breakpoints";
 
 export default {
     name: "Index",
 
     components: {
-        MenuItems
+        MenuItems,
+        showAt,
+        hideAt
     }
 };
 </script>

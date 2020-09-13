@@ -1,5 +1,5 @@
 <template>
-    <b-list-group ref="group" @click="item_clicked">
+    <b-list-group ref="group">
         <b-img
             src="../assets/logos/logo.png"
             alt="logo sp trans"
@@ -42,13 +42,12 @@
 export default {
     name: "MenuItems",
 
-    methods: {
-        item_clicked() {
-            this.$refs.group.children.forEach(child => {
-                if (child.pathname === this.$route.path) {
-                    child.classList.add("clicked");
-                }
-            });
+    mounted() {
+        for (let child of this.$refs.group.children) {
+            if (child.pathname === this.$route.path) {
+                child.classList.add("clicked");
+                break;
+            }
         }
     }
 };
@@ -61,8 +60,33 @@ export default {
     margin-bottom: 30px;
 }
 
-.item:hover,
-.item:focus,
+.item {
+    position: relative;
+}
+
+.item:hover {
+    color: var(--light);
+}
+
+.item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: calc(100% + 1px);
+    z-index: -1;
+    margin-left: -4px;
+    transition: all 0.3s;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.item:hover::before {
+    width: calc(100% + 5px);
+    background-color: var(--primary);
+}
+
+.item.router-link-active,
 .clicked {
     color: var(--light);
     background-color: var(--primary);

@@ -10,6 +10,7 @@ Para saber mais do projeto acesse a pasta: [doc](doc).
 
 -   [Vue](https://vuejs.org/)
 -   [BootstrapVue](https://bootstrap-vue.org/)
+-   [vue-breakpoints](https://github.com/apertureless/vue-breakpoints)
 -   [Axios](https://github.com/axios/axios)
 -   [OpenStreetMap](https://www.openstreetmap.org/copyright)
 -   [Leaflet](https://leafletjs.com/) com [MarkerCluster](https://github.com/Leaflet/Leaflet.markercluster)
