@@ -1,21 +1,23 @@
 <template>
-    <b-alert
-        dismissible
-        class="alert"
-        :show="count_down"
-        :variant="color"
-        @dismissed="count_down = 0"
-        @dismiss-count-down="count_down_changed"
-    >
-        <b>{{ text }}</b>
-
-        <b-progress
+    <transition>
+        <b-alert
+            dismissible
+            class="alert"
+            :show="count_down"
             :variant="color"
-            :max="timer"
-            :value="count_down"
-            height="2px"
-        />
-    </b-alert>
+            @dismissed="count_down = 0"
+            @dismiss-count-down="count_down_changed"
+        >
+            <b>{{ text }}</b>
+
+            <b-progress
+                :variant="color"
+                :max="timer"
+                :value="count_down"
+                height="2px"
+            />
+        </b-alert>
+    </transition>
 </template>
 
 <script>
@@ -76,5 +78,9 @@ export default {
     100% {
         transform: translateX(-5px);
     }
+}
+
+.alert.v-enter-active {
+    transform: translateX(100%);
 }
 </style>
